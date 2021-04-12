@@ -15,6 +15,5 @@ yarn-error.log
 .ready
 .idea
 _ide_helper.php
-_ide_helper_models.php
 phpstan.neon
 .phpstorm.meta.php
