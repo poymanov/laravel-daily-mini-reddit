@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('New Community') }}
+            {{ __('Edit Community') }}
         </h2>
     </x-slot>
 
@@ -12,26 +12,27 @@
                     <!-- Validation Errors -->
                     <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
-                    <form method="POST" action="{{ route('communities.store') }}">
-                    @csrf
+                    <form method="POST" action="{{ route('communities.update', $community) }}">
+                        @csrf
+                        @method('patch')
 
-                    <!-- Name -->
+                        <!-- Name -->
                         <div>
                             <x-label for="name" :value="__('Name')" />
 
-                            <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
+                            <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name', $community->name)" required autofocus />
                         </div>
 
                         <!-- Description -->
                         <div class="mt-4">
                             <x-label for="description" :value="__('Description')" />
 
-                            <x-textarea id="description" class="block mt-1 w-full" name="description" required>{{ old('description') }}</x-textarea>
+                            <x-textarea id="description" class="block mt-1 w-full" name="description" required>{{ old('description', $community->description) }}</x-textarea>
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
                             <x-button class="ml-4">
-                                {{ __('Create') }}
+                                {{ __('Update') }}
                             </x-button>
                         </div>
                     </form>

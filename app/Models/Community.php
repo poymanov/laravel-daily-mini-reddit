@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Community
  *
- * @property int $id
- * @property string $name
- * @property string $description
- * @property int $user_id
+ * @property int                             $id
+ * @property string                          $name
+ * @property string                          $description
+ * @property int                             $user_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|Community newModelQuery()

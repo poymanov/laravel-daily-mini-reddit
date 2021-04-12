@@ -25,8 +25,8 @@ class CommunityFactory extends Factory
     public function definition()
     {
         return [
-            'name'        => $this->faker->unique()->name,
-            'description' => $this->faker->text(200),
+            'name'        => $this->faker->unique()->sentence,
+            'description' => $this->faker->text(),
             'user_id'     => User::factory(),
         ];
     }

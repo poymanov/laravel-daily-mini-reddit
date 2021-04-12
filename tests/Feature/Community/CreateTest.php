@@ -18,7 +18,7 @@ class CreateTest extends TestCase
     /**
      * Форма создания недоступна для гостей
      */
-    public function testCreateScreenCanBeRenderedForGuest()
+    public function testCreateScreenCannotBeRenderedForGuest()
     {
         $response = $this->get('/communities/create');
         $response->assertRedirect('/login');
@@ -27,7 +27,7 @@ class CreateTest extends TestCase
     /**
      * Форма создания недоступна для пользователей с неподтвержденным email
      */
-    public function testCreateScreenCanBeRenderedForNotVerifiedUser()
+    public function testCreateScreenCannotBeRenderedForNotVerifiedUser()
     {
         $this->signIn(User::factory()->unverified()->create());
         $response = $this->get('/communities/create');
@@ -35,7 +35,7 @@ class CreateTest extends TestCase
     }
 
     /**
-     * Формат создания отображается
+     * Форма создания отображается
      */
     public function testCreateScreenCanBeRendered()
     {

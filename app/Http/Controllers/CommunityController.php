@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Community\CreateRequest;
+use App\Http\Requests\Community\UpdateRequest;
+use App\Models\Community;
 use App\UseCases\Community\Create;
-use Illuminate\Http\Request;
+use App\UseCases\Community\Update;
 use Illuminate\Http\Response;
 
 class CommunityController extends Controller
@@ -59,28 +61,38 @@ class CommunityController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @param Community $community
      *
-     * @param int $id
-     *
-     * @return Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function edit($id)
+    public function edit(Community $community)
     {
-        return new Response();
+        $this->authorize('update', $community);
+
+        return view('community.edit', compact('community'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * @param UpdateRequest $request
+     * @param Community     $community
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int                      $id
-     *
-     * @return Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, Community $community)
     {
-        return new Response();
+        $this->authorize('update', $community);
+
+        $command              = new Update\Command();
+        $command->id          = $community->id;
+        $command->name        = $request->get('name');
+        $command->description = $request->get('description');
+
+        $handler = new Update\Handler();
+        $handler->handle($command);
+
+        return redirect(route('dashboard'));
     }
 
     /**
