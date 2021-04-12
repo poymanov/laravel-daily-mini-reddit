@@ -65,7 +65,7 @@ class CommunityPolicy
      */
     public function delete(User $user, Community $community)
     {
-        //
+        return $user->id == $community->user_id;
     }
 
     /**

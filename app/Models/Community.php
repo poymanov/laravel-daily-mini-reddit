@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Community whereUserId($value)
  * @mixin \Eloquent
  * @method static \Database\Factories\CommunityFactory factory(...$parameters)
+ * @property string|null $deleted_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Community whereDeletedAt($value)
  */
 class Community extends Model
 {

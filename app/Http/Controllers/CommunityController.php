@@ -7,6 +7,7 @@ use App\Http\Requests\Community\UpdateRequest;
 use App\Models\Community;
 use App\UseCases\Community\Create;
 use App\UseCases\Community\Update;
+use App\UseCases\Community\Delete;
 use Illuminate\Http\Response;
 
 class CommunityController extends Controller
@@ -96,14 +97,21 @@ class CommunityController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @param Community $community
      *
-     * @param int $id
-     *
-     * @return Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function destroy($id)
+    public function destroy(Community $community)
     {
-        return new Response();
+        $this->authorize('delete', $community);
+
+        $command     = new Delete\Command();
+        $command->id = $community->id;
+
+        $handler = new Delete\Handler();
+        $handler->handle($command);
+
+        return redirect(route('dashboard'));
     }
 }
