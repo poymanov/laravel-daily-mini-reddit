@@ -10,6 +10,7 @@ use App\UseCases\Community\Create;
 use App\UseCases\Community\Update;
 use App\UseCases\Community\Delete;
 use Illuminate\Http\Response;
+use Throwable;
 
 class CommunityController extends Controller
 {
@@ -54,10 +55,14 @@ class CommunityController extends Controller
         $command->description = $request->get('description');
         $command->userId      = (int) auth()->id();
 
-        $handler = new Create\Handler();
-        $handler->handle($command);
+        try {
+            $handler = new Create\Handler();
+            $handler->handle($command);
 
-        return redirect(route('communities.index'));
+            return redirect(route('communities.index'))->with('alert.success', 'Community created');
+        } catch (Throwable $e) {
+            return redirect(route('communities.index'))->with('alert.error', 'Failed to create community');
+        }
     }
 
     /**
@@ -101,10 +106,14 @@ class CommunityController extends Controller
         $command->name        = $request->get('name');
         $command->description = $request->get('description');
 
-        $handler = new Update\Handler();
-        $handler->handle($command);
+        try {
+            $handler = new Update\Handler();
+            $handler->handle($command);
 
-        return redirect(route('communities.index'));
+            return redirect(route('communities.index'))->with('alert.success', 'Community updated');
+        } catch (Throwable $e) {
+            return redirect(route('communities.index'))->with('alert.error', 'Failed to update community');
+        }
     }
 
     /**
@@ -120,9 +129,13 @@ class CommunityController extends Controller
         $command     = new Delete\Command();
         $command->id = $community->id;
 
-        $handler = new Delete\Handler();
-        $handler->handle($command);
+        try {
+            $handler = new Delete\Handler();
+            $handler->handle($command);
 
-        return redirect(route('communities.index'));
+            return redirect(route('communities.index'))->with('alert.success', 'Community deleted');
+        } catch (Throwable $e) {
+            return redirect(route('communities.index'))->with('alert.error', 'Failed to delete community');
+        }
     }
 }

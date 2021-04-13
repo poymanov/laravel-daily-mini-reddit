@@ -176,6 +176,7 @@ class UpdateTest extends TestCase
         ]);
 
         $response->assertRedirect('/communities');
+        $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseHas('communities', [
             'id'          => $community->id,

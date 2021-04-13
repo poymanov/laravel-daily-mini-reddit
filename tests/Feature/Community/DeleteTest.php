@@ -79,6 +79,7 @@ class DeleteTest extends TestCase
 
         $response = $this->delete($this->buildDeleteRoute($community->id));
         $response->assertRedirect('/communities');
+        $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseMissing('communities', [
             'id'         => $community->id,

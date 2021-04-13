@@ -111,6 +111,7 @@ class CreateTest extends TestCase
 
         $response = $this->post('/communities', $community->toArray());
         $response->assertRedirect('/communities');
+        $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseHas('communities', [
             'name'        => $community->name,
