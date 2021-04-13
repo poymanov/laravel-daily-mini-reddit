@@ -21,7 +21,7 @@ class DeleteTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create();
 
-        $response = $this->delete($this->buildDeleteRoute($community->id));
+        $response = $this->delete($this->buildDeleteRoute($community->slug));
         $response->assertRedirect('/login');
     }
 
@@ -35,7 +35,7 @@ class DeleteTest extends TestCase
 
         $this->signIn(User::factory()->unverified()->create());
 
-        $response = $this->delete($this->buildDeleteRoute($community->id));
+        $response = $this->delete($this->buildDeleteRoute($community->slug));
         $response->assertRedirect('/verify-email');
     }
 
@@ -49,7 +49,7 @@ class DeleteTest extends TestCase
 
         $this->signIn();
 
-        $response = $this->delete($this->buildDeleteRoute($community->id));
+        $response = $this->delete($this->buildDeleteRoute($community->slug));
         $response->assertForbidden();
     }
 
@@ -60,7 +60,7 @@ class DeleteTest extends TestCase
     {
         $this->signIn();
 
-        $response = $this->delete($this->buildDeleteRoute(999));
+        $response = $this->delete($this->buildDeleteRoute('test-test-test'));
         $response->assertNotFound();
     }
 
@@ -77,7 +77,7 @@ class DeleteTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->delete($this->buildDeleteRoute($community->id));
+        $response = $this->delete($this->buildDeleteRoute($community->slug));
         $response->assertRedirect('/communities');
         $response->assertSessionHas('alert.success');
 
@@ -90,12 +90,12 @@ class DeleteTest extends TestCase
     /**
      * Формирование адреса для удаления сущности
      *
-     * @param int $id
+     * @param string $slug
      *
      * @return string
      */
-    private function buildDeleteRoute(int $id): string
+    private function buildDeleteRoute(string $slug): string
     {
-        return '/communities/' . $id;
+        return '/communities/' . $slug;
     }
 }

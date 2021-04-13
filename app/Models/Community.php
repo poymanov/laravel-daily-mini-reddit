@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,14 +27,39 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|Community whereUserId($value)
  * @mixin \Eloquent
  * @method static \Database\Factories\CommunityFactory factory(...$parameters)
- * @property string|null $deleted_at
+ * @property string|null                     $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder|Community whereDeletedAt($value)
  * @method static \Illuminate\Database\Query\Builder|Community onlyTrashed()
  * @method static \Illuminate\Database\Query\Builder|Community withTrashed()
  * @method static \Illuminate\Database\Query\Builder|Community withoutTrashed()
+ * @property string $slug
+ * @method static \Illuminate\Database\Eloquent\Builder|Community findSimilarSlugs(string $attribute, array $config, string $slug)
+ * @method static \Illuminate\Database\Eloquent\Builder|Community whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Community withUniqueSlugConstraints(\Illuminate\Database\Eloquent\Model $model, string $attribute, array $config, string $slug)
  */
 class Community extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use Sluggable;
+
+    /**
+     * @return array
+     */
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'name',
+            ],
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }

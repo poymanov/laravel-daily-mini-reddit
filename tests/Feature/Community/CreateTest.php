@@ -107,7 +107,7 @@ class CreateTest extends TestCase
         $this->signIn($user);
 
         /** @var Community $community */
-        $community = Community::factory()->make(['user_id' => $user->id]);
+        $community = Community::factory()->make(['name' => 'Test Test', 'user_id' => $user->id]);
 
         $response = $this->post('/communities', $community->toArray());
         $response->assertRedirect('/communities');
@@ -115,6 +115,7 @@ class CreateTest extends TestCase
 
         $this->assertDatabaseHas('communities', [
             'name'        => $community->name,
+            'slug'        => 'test-test',
             'description' => $community->description,
             'user_id'     => $community->user_id,
         ]);
