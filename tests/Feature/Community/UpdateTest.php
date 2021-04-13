@@ -175,7 +175,7 @@ class UpdateTest extends TestCase
             'description' => $newDescription,
         ]);
 
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect('/communities');
 
         $this->assertDatabaseHas('communities', [
             'id'          => $community->id,

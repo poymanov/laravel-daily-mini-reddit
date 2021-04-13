@@ -78,7 +78,7 @@ class DeleteTest extends TestCase
         $community = Community::factory()->create(['user_id' => $user->id]);
 
         $response = $this->delete($this->buildDeleteRoute($community->id));
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect('/communities');
 
         $this->assertDatabaseMissing('communities', [
             'id'         => $community->id,

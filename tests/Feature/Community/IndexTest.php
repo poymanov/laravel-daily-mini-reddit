@@ -33,6 +33,27 @@ class IndexTest extends TestCase
     }
 
     /**
+     * Отображение страницы всех сущностей
+     */
+    public function testIndexScreenCannotBeRendered()
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $this->signIn($user);
+
+        Community::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->get('/communities');
+        $response->assertOk();
+
+        $response->assertSee('Create');
+        $response->assertSee('Name');
+        $response->assertSee('Edit');
+        $response->assertSee('Delete');
+    }
+
+    /**
      * Успешное отображение всех сущностей
      */
     public function testSuccess()
@@ -49,7 +70,7 @@ class IndexTest extends TestCase
         $secondCommunity = Community::factory()->create(['user_id' => $user->id]);
 
         $response = $this->get('/communities');
-        $response->assertOk();
+
 
         $response->assertSee($firstCommunity->name);
         $response->assertSee($secondCommunity->name);

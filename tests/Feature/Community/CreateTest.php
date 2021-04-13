@@ -110,7 +110,7 @@ class CreateTest extends TestCase
         $community = Community::factory()->make(['user_id' => $user->id]);
 
         $response = $this->post('/communities', $community->toArray());
-        $response->assertRedirect('/dashboard');
+        $response->assertRedirect('/communities');
 
         $this->assertDatabaseHas('communities', [
             'name'        => $community->name,

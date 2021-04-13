@@ -57,7 +57,7 @@ class CommunityController extends Controller
         $handler = new Create\Handler();
         $handler->handle($command);
 
-        return redirect(route('dashboard'));
+        return redirect(route('communities.index'));
     }
 
     /**
@@ -104,7 +104,7 @@ class CommunityController extends Controller
         $handler = new Update\Handler();
         $handler->handle($command);
 
-        return redirect(route('dashboard'));
+        return redirect(route('communities.index'));
     }
 
     /**
@@ -123,6 +123,6 @@ class CommunityController extends Controller
         $handler = new Delete\Handler();
         $handler->handle($command);
 
-        return redirect(route('dashboard'));
+        return redirect(route('communities.index'));
     }
 }
