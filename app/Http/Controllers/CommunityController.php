@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Community\CreateRequest;
 use App\Http\Requests\Community\UpdateRequest;
 use App\Models\Community;
+use App\Services\CommunityService;
 use App\UseCases\Community\Create;
 use App\UseCases\Community\Update;
 use App\UseCases\Community\Delete;
@@ -12,14 +13,24 @@ use Illuminate\Http\Response;
 
 class CommunityController extends Controller
 {
+    private CommunityService $communityService;
+
     /**
-     * Display a listing of the resource.
-     *
-     * @return Response
+     * @param CommunityService $communityService
+     */
+    public function __construct(CommunityService $communityService)
+    {
+        $this->communityService = $communityService;
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function index()
     {
-        return new Response();
+        $communities = $this->communityService->getAllByUserId((int) auth()->id());
+
+        return view('community.index', compact('communities'));
     }
 
     /**

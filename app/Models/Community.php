@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Community
@@ -27,8 +28,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Database\Factories\CommunityFactory factory(...$parameters)
  * @property string|null $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder|Community whereDeletedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|Community onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Community withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Community withoutTrashed()
  */
 class Community extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 }
