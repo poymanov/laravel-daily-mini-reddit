@@ -5,19 +5,22 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Community;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CommunityService
 {
     /**
      * Получение списка всех сущностей пользователя
      *
-     * @param int $userId
+     * @param int      $userId
+     * @param int|null $perPage
      *
-     * @return Collection
+     * @return LengthAwarePaginator
      */
-    public function getAllByUserId(int $userId): Collection
+    public function getAllByUserId(int $userId, int $perPage = null): LengthAwarePaginator
     {
-        return Community::where(['user_id' => $userId])->get();
+        $perPage = $perPage ?? config('pagination.profile_community');
+
+        return Community::where(['user_id' => $userId])->paginate($perPage);
     }
 }

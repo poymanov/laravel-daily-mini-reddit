@@ -52,6 +52,10 @@
                                         @endforeach
                                         </tbody>
                                     </table>
+                                    <hr>
+                                    <div class="p-3 px-6">
+                                        {{ $communities->links() }}
+                                    </div>
                                 </div>
                             </div>
                         </div>

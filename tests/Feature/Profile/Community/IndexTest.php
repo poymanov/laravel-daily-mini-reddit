@@ -6,7 +6,10 @@ namespace Tests\Feature\Profile\Community;
 
 use App\Models\Community;
 use App\Models\User;
+use App\Services\CommunityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mockery;
+use Mockery\MockInterface;
 
 class IndexTest extends CommunityTestCase
 {
@@ -73,6 +76,32 @@ class IndexTest extends CommunityTestCase
 
         $response->assertSee($firstCommunity->name);
         $response->assertSee($secondCommunity->name);
+    }
+
+    /**
+     * Успешное отображение всех сущностей с учетом пагинации
+     */
+    public function testSuccessWithPagination()
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $this->signIn($user);
+
+        /** @var Community $firstCommunity */
+        $firstCommunity = Community::factory()->create(['user_id' => $user->id]);
+
+        /** @var Community $secondCommunity */
+        $secondCommunity = Community::factory()->create(['user_id' => $user->id]);
+
+        /** @var Community $thirdCommunity */
+        $thirdCommunity = Community::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->get(self::COMMON_URL);
+
+        $response->assertSee($firstCommunity->name);
+        $response->assertSee($secondCommunity->name);
+        $response->assertDontSee($thirdCommunity->name);
     }
 
     /**
