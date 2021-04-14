@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Community;
+namespace Tests\Feature\Profile\Community;
 
 use App\Models\Community;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class DeleteTest extends TestCase
+class DeleteTest extends CommunityTestCase
 {
     use RefreshDatabase;
 
@@ -21,8 +20,8 @@ class DeleteTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create();
 
-        $response = $this->delete($this->buildDeleteRoute($community->slug));
-        $response->assertRedirect('/login');
+        $response = $this->delete($this->buildDeleteUrl($community->slug));
+        $response->assertRedirect(self::LOGIN_URL);
     }
 
     /**
@@ -35,8 +34,8 @@ class DeleteTest extends TestCase
 
         $this->signIn(User::factory()->unverified()->create());
 
-        $response = $this->delete($this->buildDeleteRoute($community->slug));
-        $response->assertRedirect('/verify-email');
+        $response = $this->delete($this->buildDeleteUrl($community->slug));
+        $response->assertRedirect(self::VERIFY_EMAIL_URL);
     }
 
     /**
@@ -49,7 +48,7 @@ class DeleteTest extends TestCase
 
         $this->signIn();
 
-        $response = $this->delete($this->buildDeleteRoute($community->slug));
+        $response = $this->delete($this->buildDeleteUrl($community->slug));
         $response->assertForbidden();
     }
 
@@ -60,7 +59,7 @@ class DeleteTest extends TestCase
     {
         $this->signIn();
 
-        $response = $this->delete($this->buildDeleteRoute('test-test-test'));
+        $response = $this->delete($this->buildDeleteUrl('test-test-test'));
         $response->assertNotFound();
     }
 
@@ -77,25 +76,13 @@ class DeleteTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->delete($this->buildDeleteRoute($community->slug));
-        $response->assertRedirect('/communities');
+        $response = $this->delete($this->buildDeleteUrl($community->slug));
+        $response->assertRedirect('/profile/communities');
         $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseMissing('communities', [
             'id'         => $community->id,
             'deleted_at' => null,
         ]);
-    }
-
-    /**
-     * Формирование адреса для удаления сущности
-     *
-     * @param string $slug
-     *
-     * @return string
-     */
-    private function buildDeleteRoute(string $slug): string
-    {
-        return '/communities/' . $slug;
     }
 }

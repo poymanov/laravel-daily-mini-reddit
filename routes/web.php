@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\Profile\CommunityController;
+use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,8 +19,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
-    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => ['auth', 'verified']], function () {
+    Route::get('', [ProfileController::class, 'index'])->name('index');
     Route::resource('communities', CommunityController::class);
 });
 

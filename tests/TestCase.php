@@ -9,6 +9,10 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
+    protected const LOGIN_URL = '/login';
+
+    protected const VERIFY_EMAIL_URL = '/verify-email';
+
     /**
      * @param null $user
      */

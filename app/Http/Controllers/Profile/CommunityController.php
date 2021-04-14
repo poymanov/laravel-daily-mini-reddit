@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Profile;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Community\CreateRequest;
 use App\Http\Requests\Community\UpdateRequest;
 use App\Models\Community;
@@ -31,7 +32,7 @@ class CommunityController extends Controller
     {
         $communities = $this->communityService->getAllByUserId((int) auth()->id());
 
-        return view('community.index', compact('communities'));
+        return view('profile.community.index', compact('communities'));
     }
 
     /**
@@ -39,7 +40,7 @@ class CommunityController extends Controller
      */
     public function create()
     {
-        return view('community.create');
+        return view('profile.community.create');
     }
 
     /**
@@ -59,9 +60,9 @@ class CommunityController extends Controller
             $handler = new Create\Handler();
             $handler->handle($command);
 
-            return redirect(route('communities.index'))->with('alert.success', 'Community created');
+            return redirect(route('profile.communities.index'))->with('alert.success', 'Community created');
         } catch (Throwable $e) {
-            return redirect(route('communities.index'))->with('alert.error', 'Failed to create community');
+            return redirect(route('profile.communities.index'))->with('alert.error', 'Failed to create community');
         }
     }
 
@@ -87,7 +88,7 @@ class CommunityController extends Controller
     {
         $this->authorize('update', $community);
 
-        return view('community.edit', compact('community'));
+        return view('profile.community.edit', compact('community'));
     }
 
     /**
@@ -110,9 +111,9 @@ class CommunityController extends Controller
             $handler = new Update\Handler();
             $handler->handle($command);
 
-            return redirect(route('communities.index'))->with('alert.success', 'Community updated');
+            return redirect(route('profile.communities.index'))->with('alert.success', 'Community updated');
         } catch (Throwable $e) {
-            return redirect(route('communities.index'))->with('alert.error', 'Failed to update community');
+            return redirect(route('profile.communities.index'))->with('alert.error', 'Failed to update community');
         }
     }
 
@@ -133,9 +134,9 @@ class CommunityController extends Controller
             $handler = new Delete\Handler();
             $handler->handle($command);
 
-            return redirect(route('communities.index'))->with('alert.success', 'Community deleted');
+            return redirect(route('profile.communities.index'))->with('alert.success', 'Community deleted');
         } catch (Throwable $e) {
-            return redirect(route('communities.index'))->with('alert.error', 'Failed to delete community');
+            return redirect(route('profile.communities.index'))->with('alert.error', 'Failed to delete community');
         }
     }
 }

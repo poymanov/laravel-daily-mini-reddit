@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Community;
+namespace Tests\Feature\Profile\Community;
 
 use App\Models\Community;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 
-class UpdateTest extends TestCase
+class UpdateTest extends CommunityTestCase
 {
     use RefreshDatabase;
     use WithFaker;
@@ -23,8 +22,8 @@ class UpdateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create();
 
-        $response = $this->get($this->buildEditRoute($community->slug));
-        $response->assertRedirect('/login');
+        $response = $this->get($this->buildEditUrl($community->slug));
+        $response->assertRedirect(self::LOGIN_URL);
     }
 
     /**
@@ -36,8 +35,8 @@ class UpdateTest extends TestCase
         $community = Community::factory()->create();
 
         $this->signIn(User::factory()->unverified()->create());
-        $response = $this->get($this->buildEditRoute($community->slug));
-        $response->assertRedirect('/verify-email');
+        $response = $this->get($this->buildEditUrl($community->slug));
+        $response->assertRedirect(self::VERIFY_EMAIL_URL);
     }
 
     /**
@@ -49,7 +48,7 @@ class UpdateTest extends TestCase
         $community = Community::factory()->create();
 
         $this->signIn();
-        $response = $this->get($this->buildEditRoute($community->slug));
+        $response = $this->get($this->buildEditUrl($community->slug));
 
         $response->assertForbidden();
     }
@@ -67,7 +66,7 @@ class UpdateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->get($this->buildEditRoute($community->slug));
+        $response = $this->get($this->buildEditUrl($community->slug));
         $response->assertOk();
 
         $response->assertSee('Name');
@@ -88,7 +87,7 @@ class UpdateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create();
 
-        $response = $this->patch($this->buildUpdateRoute($community->slug));
+        $response = $this->patch($this->buildUpdateUrl($community->slug));
         $response->assertSessionHasErrors(['name', 'description']);
     }
 
@@ -102,7 +101,7 @@ class UpdateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create();
 
-        $response = $this->patch($this->buildUpdateRoute($community->slug), ['name' => '12']);
+        $response = $this->patch($this->buildUpdateUrl($community->slug), ['name' => '12']);
         $response->assertSessionHasErrors(['name']);
     }
 
@@ -119,7 +118,7 @@ class UpdateTest extends TestCase
         /** @var Community $anotherCommunity */
         $anotherCommunity = Community::factory()->create();
 
-        $response = $this->patch($this->buildUpdateRoute($community->slug), ['name' => $anotherCommunity->name]);
+        $response = $this->patch($this->buildUpdateUrl($community->slug), ['name' => $anotherCommunity->name]);
         $response->assertSessionHasErrors(['name']);
     }
 
@@ -133,7 +132,7 @@ class UpdateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create();
 
-        $response = $this->patch($this->buildUpdateRoute($community->slug), ['description' => $this->faker->text(1000)]);
+        $response = $this->patch($this->buildUpdateUrl($community->slug), ['description' => $this->faker->text(1000)]);
         $response->assertSessionHasErrors(['description']);
     }
 
@@ -146,7 +145,7 @@ class UpdateTest extends TestCase
         $community = Community::factory()->create();
 
         $this->signIn();
-        $response = $this->patch($this->buildUpdateRoute($community->slug), [
+        $response = $this->patch($this->buildUpdateUrl($community->slug), [
             'name'        => $this->faker->sentence,
             'description' => $this->faker->text(50),
         ]);
@@ -170,12 +169,12 @@ class UpdateTest extends TestCase
         $newName        = 'test-test';
         $newDescription = $this->faker->text(50);
 
-        $response = $this->patch($this->buildUpdateRoute($community->slug), [
+        $response = $this->patch($this->buildUpdateUrl($community->slug), [
             'name'        => $newName,
             'description' => $newDescription,
         ]);
 
-        $response->assertRedirect('/communities');
+        $response->assertRedirect('/profile/communities');
         $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseHas('communities', [
@@ -199,35 +198,11 @@ class UpdateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->patch($this->buildUpdateRoute($community->slug), [
+        $response = $this->patch($this->buildUpdateUrl($community->slug), [
             'name'        => $community->name,
             'description' => $this->faker->text(50),
         ]);
 
         $response->assertSessionHasNoErrors();
-    }
-
-    /**
-     * Формирование адреса редактирования сущности
-     *
-     * @param string $slug
-     *
-     * @return string
-     */
-    private function buildEditRoute(string $slug): string
-    {
-        return '/communities/' . $slug . '/edit';
-    }
-
-    /**
-     * Формирование адреса внесения изменений в сущность
-     *
-     * @param string $slug
-     *
-     * @return string
-     */
-    private function buildUpdateRoute(string $slug): string
-    {
-        return '/communities/' . $slug;
     }
 }

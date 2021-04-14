@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Community;
+namespace Tests\Feature\Profile\Community;
 
 use App\Models\Community;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class IndexTest extends TestCase
+class IndexTest extends CommunityTestCase
 {
     use RefreshDatabase;
 
@@ -18,8 +17,8 @@ class IndexTest extends TestCase
      */
     public function testIndexScreenCannotBeRenderedForGuest()
     {
-        $response = $this->get('/communities');
-        $response->assertRedirect('/login');
+        $response = $this->get(self::COMMON_URL);
+        $response->assertRedirect(self::LOGIN_URL);
     }
 
     /**
@@ -28,8 +27,8 @@ class IndexTest extends TestCase
     public function testIndexScreenCannotBeRenderedForNotVerifiedUser()
     {
         $this->signIn(User::factory()->unverified()->create());
-        $response = $this->get('/communities');
-        $response->assertRedirect('/verify-email');
+        $response = $this->get(self::COMMON_URL);
+        $response->assertRedirect(self::VERIFY_EMAIL_URL);
     }
 
     /**
@@ -44,7 +43,7 @@ class IndexTest extends TestCase
 
         Community::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->get('/communities');
+        $response = $this->get(self::COMMON_URL);
         $response->assertOk();
 
         $response->assertSee('Create');
@@ -69,7 +68,7 @@ class IndexTest extends TestCase
         /** @var Community $secondCommunity */
         $secondCommunity = Community::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->get('/communities');
+        $response = $this->get(self::COMMON_URL);
 
 
         $response->assertSee($firstCommunity->name);
@@ -89,7 +88,7 @@ class IndexTest extends TestCase
         /** @var Community $secondCommunity */
         $secondCommunity = Community::factory()->create();
 
-        $response = $this->get('/communities');
+        $response = $this->get(self::COMMON_URL);
 
         $response->assertDontSee($firstCommunity->name);
         $response->assertDontSee($secondCommunity->name);
@@ -111,7 +110,7 @@ class IndexTest extends TestCase
         /** @var Community $secondCommunity */
         $secondCommunity = Community::factory()->deleted()->create(['user_id' => $user->id]);
 
-        $response = $this->get('/communities');
+        $response = $this->get(self::COMMON_URL);
 
         $response->assertDontSee($firstCommunity->name);
         $response->assertDontSee($secondCommunity->name);

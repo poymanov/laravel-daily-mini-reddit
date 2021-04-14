@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Community;
+namespace Tests\Feature\Profile\Community;
 
 use App\Models\Community;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 
-class CreateTest extends TestCase
+class CreateTest extends CommunityTestCase
 {
     use RefreshDatabase;
     use WithFaker;
@@ -20,8 +19,8 @@ class CreateTest extends TestCase
      */
     public function testCreateScreenCannotBeRenderedForGuest()
     {
-        $response = $this->get('/communities/create');
-        $response->assertRedirect('/login');
+        $response = $this->get($this->buildCreateUrl());
+        $response->assertRedirect(self::LOGIN_URL);
     }
 
     /**
@@ -30,8 +29,8 @@ class CreateTest extends TestCase
     public function testCreateScreenCannotBeRenderedForNotVerifiedUser()
     {
         $this->signIn(User::factory()->unverified()->create());
-        $response = $this->get('/communities/create');
-        $response->assertRedirect('/verify-email');
+        $response = $this->get($this->buildCreateUrl());
+        $response->assertRedirect(self::VERIFY_EMAIL_URL);
     }
 
     /**
@@ -41,7 +40,7 @@ class CreateTest extends TestCase
     {
         $this->signIn();
 
-        $response = $this->get('/communities/create');
+        $response = $this->get($this->buildCreateUrl());
         $response->assertOk();
 
         $response->assertSee('Name');
@@ -56,7 +55,7 @@ class CreateTest extends TestCase
     {
         $this->signIn();
 
-        $response = $this->post('/communities');
+        $response = $this->post(self::COMMON_URL);
         $response->assertSessionHasErrors(['name', 'description']);
     }
 
@@ -67,7 +66,7 @@ class CreateTest extends TestCase
     {
         $this->signIn();
 
-        $response = $this->post('/communities', ['name' => '12']);
+        $response = $this->post(self::COMMON_URL, ['name' => '12']);
         $response->assertSessionHasErrors(['name']);
     }
 
@@ -81,7 +80,7 @@ class CreateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->create();
 
-        $response = $this->post('/communities', ['name' => $community->name]);
+        $response = $this->post(self::COMMON_URL, ['name' => $community->name]);
         $response->assertSessionHasErrors(['name']);
     }
 
@@ -92,7 +91,7 @@ class CreateTest extends TestCase
     {
         $this->signIn();
 
-        $response = $this->post('/communities', ['description' => $this->faker->text(1000)]);
+        $response = $this->post(self::COMMON_URL, ['description' => $this->faker->text(1000)]);
         $response->assertSessionHasErrors(['description']);
     }
 
@@ -109,8 +108,8 @@ class CreateTest extends TestCase
         /** @var Community $community */
         $community = Community::factory()->make(['name' => 'Test Test', 'user_id' => $user->id]);
 
-        $response = $this->post('/communities', $community->toArray());
-        $response->assertRedirect('/communities');
+        $response = $this->post(self::COMMON_URL, $community->toArray());
+        $response->assertRedirect(self::COMMON_URL);
         $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseHas('communities', [
