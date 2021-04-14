@@ -23,4 +23,18 @@ class CommunityService
 
         return Community::where(['user_id' => $userId])->paginate($perPage);
     }
+
+    /**
+     * Отображение всех последних записей
+     *
+     * @param int|null $perPage
+     *
+     * @return LengthAwarePaginator
+     */
+    public function getAllLatest(int $perPage = null): LengthAwarePaginator
+    {
+        $perPage = $perPage ?? config('pagination.community');
+
+        return Community::latest()->paginate($perPage);
+    }
 }
