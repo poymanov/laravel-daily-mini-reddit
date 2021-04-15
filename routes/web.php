@@ -25,8 +25,10 @@ Route::group(['prefix' => 'communities', 'as' => 'community.'], function () {
 });
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
-    Route::resource('communities.posts', PostController::class);
+    Route::resource('communities.posts', PostController::class)->except('show');
 });
+
+Route::get('/communities/{community}/posts/{post}', [PostController::class, 'show'])->name('communities.posts.show');
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => ['auth', 'verified']], function () {
     Route::get('', [ProfileController::class, 'index'])->name('index');

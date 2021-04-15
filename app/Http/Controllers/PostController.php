@@ -131,4 +131,19 @@ class PostController extends Controller
             return redirect(route('community.index'))->with('alert.error', 'Failed to delete post');
         }
     }
+
+    /**
+     * @param Community $community
+     * @param Post      $post
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function show(Community $community, Post $post)
+    {
+        if ($community->id != $post->community_id) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return view('post.show', compact('community', 'post'));
+    }
 }
