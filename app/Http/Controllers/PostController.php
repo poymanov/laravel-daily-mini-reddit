@@ -10,6 +10,7 @@ use App\Models\Community;
 use App\Models\Post;
 use App\UseCases\Post\Create;
 use App\UseCases\Post\Update;
+use App\UseCases\Post\Delete;
 use Illuminate\Http\Response;
 use Throwable;
 
@@ -99,6 +100,35 @@ class PostController extends Controller
             return redirect(route('community.index'))->with('alert.success', 'Post updated');
         } catch (Throwable $e) {
             return redirect(route('community.index'))->with('alert.error', 'Failed to update post');
+        }
+    }
+
+    /**
+     * @param Community $community
+     * @param Post      $post
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function destroy(Community $community, Post $post)
+    {
+        if ($community->id != $post->community_id) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $this->authorize('delete', $post);
+
+        $command         = new Delete\Command();
+        $command->id     = $post->id;
+        $command->userId = (int) auth()->id();
+
+        try {
+            $handler = new Delete\Handler();
+            $handler->handle($command);
+
+            return redirect(route('community.index'))->with('alert.success', 'Post deleted');
+        } catch (Throwable $e) {
+            return redirect(route('community.index'))->with('alert.error', 'Failed to delete post');
         }
     }
 }
