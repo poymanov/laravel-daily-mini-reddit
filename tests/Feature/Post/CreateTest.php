@@ -95,7 +95,7 @@ class CreateTest extends TestCase
     }
 
     /**
-     * Попытка создания со слишком коротким наименованием
+     * Попытка создания с неправильным url
      */
     public function testWrongUrl()
     {

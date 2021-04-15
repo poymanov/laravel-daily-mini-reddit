@@ -28,12 +28,19 @@ abstract class TestCase extends BaseTestCase
      * Создание сущности User
      *
      * @param array $params
+     * @param bool  $isUnverified
      *
      * @return User
      */
-    protected function createUser(array $params = []): User
+    protected function createUser(array $params = [], bool $isUnverified = false): User
     {
-        return User::factory()->create($params);
+        $factory = User::factory();
+
+        if ($isUnverified) {
+            $factory = $factory->unverified();
+        }
+
+        return $factory->create($params);
     }
 
     /**
@@ -47,6 +54,25 @@ abstract class TestCase extends BaseTestCase
     protected function createCommunity(array $params = [], bool $isDeleted = false): Community
     {
         $factory = Community::factory();
+
+        if ($isDeleted) {
+            $factory = $factory->deleted();
+        }
+
+        return $factory->create($params);
+    }
+
+    /**
+     * Создание сущности Post
+     *
+     * @param array $params
+     * @param bool  $isDeleted
+     *
+     * @return Post
+     */
+    protected function createPost(array $params = [], bool $isDeleted = false): Post
+    {
+        $factory = Post::factory();
 
         if ($isDeleted) {
             $factory = $factory->deleted();

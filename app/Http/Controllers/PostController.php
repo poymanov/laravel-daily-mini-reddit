@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Post\CreateRequest;
+use App\Http\Requests\Post\UpdateRequest;
 use App\Models\Community;
+use App\Models\Post;
 use App\UseCases\Post\Create;
+use App\UseCases\Post\Update;
+use Illuminate\Http\Response;
 use Throwable;
 
 class PostController extends Controller
@@ -43,6 +47,58 @@ class PostController extends Controller
             return redirect(route('community.index'))->with('alert.success', 'Post created');
         } catch (Throwable $e) {
             return redirect(route('community.index'))->with('alert.error', 'Failed to create post');
+        }
+    }
+
+    /**
+     * @param Community $community
+     * @param Post      $post
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function edit(Community $community, Post $post)
+    {
+        if ($community->id != $post->community_id) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $this->authorize('update', $post);
+
+        return view('post.edit', compact('community', 'post'));
+    }
+
+    /**
+     * @param UpdateRequest $request
+     * @param Community     $community
+     * @param Post          $post
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function update(UpdateRequest $request, Community $community, Post $post)
+    {
+        if ($community->id != $post->community_id) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $this->authorize('update', $post);
+
+        $command              = new Update\Command();
+        $command->id          = $post->id;
+        $command->communityId = $community->id;
+        $command->userId      = (int) auth()->id();
+        $command->title       = $request->get('title');
+        $command->text        = $request->get('text');
+        $command->url         = $request->get('url');
+
+        try {
+            $handler = new Update\Handler();
+            $handler->handle($command);
+
+            return redirect(route('community.index'))->with('alert.success', 'Post updated');
+        } catch (Throwable $e) {
+            return redirect(route('community.index'))->with('alert.error', 'Failed to update post');
         }
     }
 }
