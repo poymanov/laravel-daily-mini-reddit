@@ -29,5 +29,6 @@
         <server name="TELESCOPE_ENABLED" value="false"/>
         <server name="PROFILE_COMMUNITY_PAGINATION_COUNT" value="2"/>
         <server name="COMMUNITY_PAGINATION_COUNT" value="2"/>
+        <server name="PROFILE_COMMUNITY_POSTS_PAGINATION_COUNT" value="2"/>
     </php>
 </phpunit>

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
+namespace Tests\Feature\Community;
 
 use App\Models\Community;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CommunityTest extends TestCase
+class IndexTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
-     * Успешное отображение главной страницы
+     * Успешное отображение страницы с сообществами
      */
     public function testScreenCanBeRendered()
     {

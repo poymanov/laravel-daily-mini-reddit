@@ -22,6 +22,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::group(['prefix' => 'communities', 'as' => 'community.'], function () {
     Route::get('', [CommunityController::class, 'index'])->name('index');
+    Route::get('{community}', [CommunityController::class, 'show'])->name('show');
 });
 
 Route::group(['middleware' => ['auth', 'verified']], function () {

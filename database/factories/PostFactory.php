@@ -28,7 +28,7 @@ class PostFactory extends Factory
         return [
             'community_id' => Community::factory(),
             'user_id'      => User::factory(),
-            'title'        => $this->faker->unique()->title,
+            'title'        => $this->faker->unique()->sentence,
             'text'         => $this->faker->text,
             'url'          => $this->faker->url,
         ];
