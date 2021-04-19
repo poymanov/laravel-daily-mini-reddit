@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Community;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class CommunityService
 {
@@ -36,5 +37,19 @@ class CommunityService
         $perPage = $perPage ?? config('pagination.community');
 
         return Community::latest()->paginate($perPage);
+    }
+
+    /**
+     * Получение ограниченного списка последних сообществ
+     *
+     * @param int|null $limit
+     *
+     * @return Collection
+     */
+    public function getAllLatestWithLimit(int $limit = null): Collection
+    {
+        $limit = $limit ?? config('custom.home_latest_communities_limit');
+
+        return Community::latest()->limit($limit)->get();
     }
 }

@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereUserId($value)
+ * @property-read \App\Models\Community $community
  */
 class Post extends Model
 {
@@ -67,6 +68,9 @@ class Post extends Model
         return 'slug';
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function community()
     {
         return $this->belongsTo(Community::class);
