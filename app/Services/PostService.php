@@ -21,4 +21,16 @@ class PostService
 
         return Post::latest()->where('community_id', $communityId)->paginate($perPage);
     }
+
+    /**
+     * @param int|null $perPage
+     *
+     * @return LengthAwarePaginator
+     */
+    public function getAllLatest(int $perPage = null): LengthAwarePaginator
+    {
+        $perPage = $perPage ?? config('pagination.home_posts');
+
+        return Post::latest()->paginate($perPage);
+    }
 }

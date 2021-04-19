@@ -20,13 +20,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|Post withUniqueSlugConstraints(\Illuminate\Database\Eloquent\Model $model, string $attribute, array $config, string $slug)
  * @method static \Illuminate\Database\Query\Builder|Post withoutTrashed()
  * @mixin \Eloquent
- * @property int $id
- * @property int $community_id
- * @property int $user_id
- * @property string $title
- * @property string|null $text
- * @property string|null $url
- * @property string $slug
+ * @property int                             $id
+ * @property int                             $community_id
+ * @property int                             $user_id
+ * @property string                          $title
+ * @property string|null                     $text
+ * @property string|null                     $url
+ * @property string                          $slug
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -65,5 +65,10 @@ class Post extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function community()
+    {
+        return $this->belongsTo(Community::class);
     }
 }
