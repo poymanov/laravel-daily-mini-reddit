@@ -7,6 +7,8 @@ namespace Tests\Feature\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CreateTest extends TestCase
@@ -53,6 +55,7 @@ class CreateTest extends TestCase
         $response->assertSee('Title');
         $response->assertSee('Text');
         $response->assertSee('Url');
+        $response->assertSee('Image');
         $response->assertSee('Create');
     }
 
@@ -192,6 +195,28 @@ class CreateTest extends TestCase
             'text'         => $post->text,
             'url'          => null,
         ]);
+    }
+
+    /**
+     * Успешное создание с загрузкой изображения
+     */
+    public function testSuccessWithImage()
+    {
+        Storage::fake('public');
+
+        $user = $this->createUser();
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->makePost();
+
+        $response = $this->post($this->buildCommonUrl($community->slug), $post->toArray() + ['image' => UploadedFile::fake()->image('photo1.jpg'),]);
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect($this->buildCommunitiesUrl());
+
+        $this->assertCount(2, Storage::disk('public')->allFiles());
+
+        $this->assertDatabaseCount('post_images', 2);
     }
 
     /**

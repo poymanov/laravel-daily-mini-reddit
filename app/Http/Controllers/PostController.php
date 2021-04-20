@@ -12,6 +12,7 @@ use App\UseCases\Post\Create;
 use App\UseCases\Post\Update;
 use App\UseCases\Post\Delete;
 use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
 use Throwable;
 
 class PostController extends Controller
@@ -34,12 +35,16 @@ class PostController extends Controller
      */
     public function store(CreateRequest $request, Community $community)
     {
+        /** @var UploadedFile $image */
+        $image = $request->file('image');
+
         $command              = new Create\Command();
         $command->communityId = $community->id;
         $command->userId      = (int) auth()->id();
         $command->title       = $request->get('title');
         $command->text        = $request->get('text');
         $command->url         = $request->get('url');
+        $command->image       = $image;
 
         try {
             $handler = new Create\Handler();

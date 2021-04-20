@@ -6,15 +6,23 @@ namespace App\UseCases\Post\Create;
 
 use App\Models\Community;
 use App\Models\Post;
+use App\Models\PostImage;
 use App\Models\User;
+use App\Services\PostImageService;
 use Exception;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManagerStatic;
+use Str;
 
 class Handler
 {
     /**
      * @param Command $command
      *
-     * @throws Exception
+     * @throws \Throwable
      */
     public function handle(Command $command): void
     {
@@ -30,15 +38,24 @@ class Handler
             throw new Exception('Failed to find user for post');
         }
 
-        $post               = new Post();
-        $post->community_id = $community->id;
-        $post->user_id      = $user->id;
-        $post->title        = $command->title;
-        $post->text         = $command->text;
-        $post->url          = $command->url;
+        DB::transaction(function () use ($community, $user, $command) {
+            $post               = new Post();
+            $post->community_id = $community->id;
+            $post->user_id      = $user->id;
+            $post->title        = $command->title;
+            $post->text         = $command->text;
+            $post->url          = $command->url;
 
-        if (!$post->save()) {
-            throw new Exception('Failed to create post');
-        }
+            if (!$post->save()) {
+                throw new Exception('Failed to create post');
+            }
+
+            if ($command->image) {
+                /** @var PostImageService $postImageService */
+                $postImageService = App::make(PostImageService::class);
+
+                $postImageService->storeUploadedFile($command->image, $post->id);
+            }
+        });
     }
 }

@@ -11,7 +11,7 @@
                     <!-- Validation Errors -->
                     <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
-                    <form method="POST" action="{{ route('communities.posts.store', $community) }}">
+                    <form method="POST" action="{{ route('communities.posts.store', $community) }}" enctype="multipart/form-data">
                     @csrf
 
                         <!-- Title -->
@@ -29,10 +29,15 @@
                         </div>
 
                         <!-- Url -->
-                        <div>
+                        <div class="mb-4">
                             <x-label for="url" :value="__('Url')" />
 
                             <x-input id="url" class="block mt-1 w-full" type="text" name="url" :value="old('url')"/>
+                        </div>
+
+                        <div>
+                            <x-label for="image" :value="__('Image')" />
+                            <x-input id="image" class="block mt-1 w-full" type="file" accept="image/*" name="image"/>
                         </div>
 
                         <div class="flex items-center justify-end mt-4">

@@ -29,6 +29,7 @@ class CreateRequest extends FormRequest
             'title' => 'required|string|min:3',
             'text'  => 'nullable|string',
             'url'   => 'nullable|url',
+            'image' => 'nullable|file|image'
         ];
     }
 }
