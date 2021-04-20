@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Models\Community;
 use App\Models\Post;
+use App\Models\PostImage;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
@@ -79,6 +80,18 @@ abstract class TestCase extends BaseTestCase
         }
 
         return $factory->create($params);
+    }
+
+    /**
+     * Создание сущности PostImage
+     *
+     * @param array $params
+     *
+     * @return PostImage
+     */
+    protected function createPostImage(array $params = []): PostImage
+    {
+        return PostImage::factory()->create($params);
     }
 
     /**

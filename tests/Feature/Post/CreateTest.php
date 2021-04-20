@@ -210,7 +210,7 @@ class CreateTest extends TestCase
         $community = $this->createCommunity();
         $post      = $this->makePost();
 
-        $response = $this->post($this->buildCommonUrl($community->slug), $post->toArray() + ['image' => UploadedFile::fake()->image('photo1.jpg'),]);
+        $response = $this->post($this->buildCommonUrl($community->slug), $post->toArray() + ['image' => UploadedFile::fake()->image('photo1.jpg')]);
         $response->assertSessionHasNoErrors();
         $response->assertRedirect($this->buildCommunitiesUrl());
 

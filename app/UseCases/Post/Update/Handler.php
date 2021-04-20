@@ -7,7 +7,10 @@ namespace App\UseCases\Post\Update;
 use App\Models\Community;
 use App\Models\Post;
 use App\Models\User;
+use App\Services\PostImageService;
 use Exception;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 class Handler
 {
@@ -40,12 +43,26 @@ class Handler
             throw new Exception('This user cannot update this post (not owner)');
         }
 
-        $post->title = $command->title;
-        $post->text  = $command->text;
-        $post->url   = $command->url;
+        /** @var PostImageService $postImageService */
+        $postImageService = App::make(PostImageService::class);
 
-        if (!$post->save()) {
-            throw new Exception('Failed to update post');
-        }
+        DB::transaction(function () use ($post, $command, $postImageService) {
+            $post->title = $command->title;
+            $post->text  = $command->text;
+            $post->url   = $command->url;
+
+            if (!$post->save()) {
+                throw new Exception('Failed to update post');
+            }
+
+            if ($command->image) {
+                $postImageService->deleteImage($post->id);
+                $postImageService->storeUploadedFile($command->image, $post->id);
+            } else {
+                if ($command->deleteImage) {
+                    $postImageService->deleteImage($post->id);
+                }
+            }
+        });
     }
 }

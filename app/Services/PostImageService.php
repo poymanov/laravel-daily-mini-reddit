@@ -25,6 +25,22 @@ class PostImageService
         }
     }
 
+    public function deleteImage(int $postId): void
+    {
+        $postImages = PostImage::where('post_id', $postId)->get();
+
+        foreach ($postImages as $postImage) {
+            $filename = $postImage->name;
+            $filepath = 'posts/' . $postId . '/' . $filename;
+
+            if ($postImage->delete()) {
+                Storage::disk('public')->delete($filepath);
+            } else {
+                throw new Exception('Failed to delete post image');
+            }
+        }
+    }
+
     /**
      * Физическое сохранение изображения
      *

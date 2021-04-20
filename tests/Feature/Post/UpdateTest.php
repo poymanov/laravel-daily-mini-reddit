@@ -6,6 +6,8 @@ namespace Tests\Feature\Post;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -86,12 +88,73 @@ class UpdateTest extends TestCase
         $response->assertSee('Title');
         $response->assertSee('Text');
         $response->assertSee('Url');
+        $response->assertSee('Image');
 
         $response->assertSee($post->title);
         $response->assertSee($post->text);
         $response->assertSee($post->url);
 
         $response->assertSee('Update');
+    }
+
+    /**
+     * Форма редактирования отображается с изображением
+     */
+    public function testUpdateScreenCanBeRenderedWithImage()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['user_id' => $user->id, 'community_id' => $community->id]);
+
+        $this->createPostImage(['post_id' => $post->id, 'type' => 'original']);
+        $largeImage = $this->createPostImage(['post_id' => $post->id, 'type' => 'large']);
+
+        $response = $this->get($this->buildEditUrl($community->slug, $post->slug));
+        $response->assertOk();
+
+        $response->assertSee($largeImage->name);
+    }
+
+    /**
+     * Форма редактирования отображается без опции удаления изображения
+     */
+    public function testUpdateScreenCanBeRenderedWithoutDeleteImageOption()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['user_id' => $user->id, 'community_id' => $community->id]);
+
+        $response = $this->get($this->buildEditUrl($community->slug, $post->slug));
+        $response->assertOk();
+
+        $response->assertDontSee('Delete image');
+    }
+
+    /**
+     * Форма редактирования отображается с опцией удаления изображения
+     */
+    public function testUpdateScreenCanBeRenderedWithDeleteImageOption()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['user_id' => $user->id, 'community_id' => $community->id]);
+
+        $this->createPostImage(['post_id' => $post->id, 'type' => 'original']);
+        $this->createPostImage(['post_id' => $post->id, 'type' => 'large']);
+
+        $response = $this->get($this->buildEditUrl($community->slug, $post->slug));
+        $response->assertOk();
+
+        $response->assertSee('Delete image');
     }
 
     /**
@@ -332,6 +395,69 @@ class UpdateTest extends TestCase
             'id'  => $post->id,
             'url' => null,
         ]);
+    }
+
+    /**
+     * Успешное изменение публикации с загрузкой нового изображения
+     */
+    public function testSuccessWithUpdateImage()
+    {
+        Storage::fake('public');
+
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['user_id' => $user->id, 'community_id' => $community->id, 'url' => null]);
+
+        $originalImage = $this->createPostImage(['post_id' => $post->id, 'type' => 'original']);
+        $largeImage    = $this->createPostImage(['post_id' => $post->id, 'type' => 'large']);
+
+        $response = $this->patch(
+            $this->buildUpdateUrl($community->slug, $post->slug),
+            $post->toArray() + ['image' => UploadedFile::fake()->image('photo1.jpg')]
+        );
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertCount(2, Storage::disk('public')->allFiles());
+
+        $this->assertDatabaseMissing('post_images', [
+            'id'   => $post->id,
+            'name' => $originalImage->name,
+        ]);
+
+        $this->assertDatabaseMissing('post_images', [
+            'id'   => $post->id,
+            'name' => $largeImage->name,
+        ]);
+    }
+
+    /**
+     * Успешное изменение публикации с удалением изображения
+     */
+    public function testSuccessWithDeleteImage()
+    {
+        Storage::fake('public');
+
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['user_id' => $user->id, 'community_id' => $community->id, 'url' => null]);
+
+        $this->createPostImage(['post_id' => $post->id, 'type' => 'original']);
+        $this->createPostImage(['post_id' => $post->id, 'type' => 'large']);
+
+        $response = $this->patch($this->buildUpdateUrl($community->slug, $post->slug), $post->toArray() + ['delete_image' => true]);
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertCount(0, Storage::disk('public')->allFiles());
+
+        $this->assertDatabaseCount('post_images', 0);
     }
 
     /**

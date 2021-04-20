@@ -90,6 +90,9 @@ class PostController extends Controller
 
         $this->authorize('update', $post);
 
+        /** @var UploadedFile $image */
+        $image = $request->file('image');
+
         $command              = new Update\Command();
         $command->id          = $post->id;
         $command->communityId = $community->id;
@@ -97,6 +100,8 @@ class PostController extends Controller
         $command->title       = $request->get('title');
         $command->text        = $request->get('text');
         $command->url         = $request->get('url');
+        $command->image       = $image;
+        $command->deleteImage = $request->has('delete_image');
 
         try {
             $handler = new Update\Handler();

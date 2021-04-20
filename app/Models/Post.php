@@ -6,6 +6,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Storage;
 
 /**
  * App\Models\Post
@@ -20,16 +21,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|Post withUniqueSlugConstraints(\Illuminate\Database\Eloquent\Model $model, string $attribute, array $config, string $slug)
  * @method static \Illuminate\Database\Query\Builder|Post withoutTrashed()
  * @mixin \Eloquent
- * @property int                             $id
- * @property int                             $community_id
- * @property int                             $user_id
- * @property string                          $title
- * @property string|null                     $text
- * @property string|null                     $url
- * @property string                          $slug
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int                                                                   $id
+ * @property int                                                                   $community_id
+ * @property int                                                                   $user_id
+ * @property string                                                                $title
+ * @property string|null                                                           $text
+ * @property string|null                                                           $url
+ * @property string                                                                $slug
+ * @property \Illuminate\Support\Carbon|null                                       $created_at
+ * @property \Illuminate\Support\Carbon|null                                       $updated_at
+ * @property \Illuminate\Support\Carbon|null                                       $deleted_at
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereCommunityId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereDeletedAt($value)
@@ -40,7 +41,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereUserId($value)
- * @property-read \App\Models\Community $community
+ * @property-read \App\Models\Community                                            $community
+ * @property-read string|null                                                      $large_image_url
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PostImage[] $largeImage
+ * @property-read int|null                                                         $large_image_count
  */
 class Post extends Model
 {
@@ -74,5 +78,28 @@ class Post extends Model
     public function community()
     {
         return $this->belongsTo(Community::class);
+    }
+
+    /**
+     * @return Model|\Illuminate\Database\Eloquent\Relations\HasMany|object|null
+     */
+    public function largeImage()
+    {
+        return $this->hasMany(PostImage::class)->where('type', 'large');
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLargeImageUrlAttribute(): ?string
+    {
+        /** @var PostImage $largeImage */
+        $largeImage = $this->largeImage->first();
+
+        if (isset($largeImage->name)) {
+            return Storage::disk('public')->url('posts/' . $this->id . '/' . $largeImage->name);
+        } else {
+            return null;
+        }
     }
 }
