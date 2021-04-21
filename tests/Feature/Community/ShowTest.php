@@ -129,6 +129,30 @@ class ShowTest extends TestCase
     }
 
     /**
+     * Кнопка создания поста не отображается для гостей
+     */
+    public function testCreatePostGuest()
+    {
+        $community = $this->createCommunity();
+
+        $response = $this->get($this->buildShowUrl($community->slug));
+        $response->assertDontSee('Create post');
+    }
+
+    /**
+     * Кнопка создания поста отображается для авторизованных пользователей
+     */
+    public function testCreatePostAuth()
+    {
+        $this->signIn();
+
+        $community = $this->createCommunity();
+
+        $response = $this->get($this->buildShowUrl($community->slug));
+        $response->assertSee('Create post');
+    }
+
+    /**
      * Формирование пути для просмотра сообщества
      *
      * @param string $communitySlug
