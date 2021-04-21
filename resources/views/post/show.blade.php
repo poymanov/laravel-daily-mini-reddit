@@ -12,6 +12,10 @@
                             </p>
                         @endif
 
+                        @if($post->largeImageUrl)
+                            <img src="{{ $post->largeImageUrl }}" class="mb-2"/>
+                        @endif
+
                         @if($post->text)
                             <p class="mb-2">
                                 {{ $post->text }}

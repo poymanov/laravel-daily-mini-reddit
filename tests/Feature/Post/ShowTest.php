@@ -77,6 +77,22 @@ class ShowTest extends TestCase
     }
 
     /**
+     * Просмотр публикации с изображением
+     */
+    public function testSuccessWithImage()
+    {
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $postLargeImage = $this->createPostImage(['type' => 'large', 'post_id' => $post->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+        $response->assertOk();
+
+        $response->assertSee($postLargeImage->name);
+    }
+
+    /**
      * Формирование пути для просмотра публикации
      *
      * @param string $communitySlug
