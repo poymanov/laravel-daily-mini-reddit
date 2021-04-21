@@ -39,7 +39,7 @@ class ShowTest extends TestCase
     public function testAnotherCommunity()
     {
         $community = $this->createCommunity();
-        $post = $this->createPost();
+        $post      = $this->createPost();
 
         $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
         $response->assertNotFound();
@@ -90,6 +90,95 @@ class ShowTest extends TestCase
         $response->assertOk();
 
         $response->assertSee($postLargeImage->name);
+    }
+
+    /**
+     * Кнопка редактирования не отображается для гостей
+     */
+    public function testEditButtonGuest()
+    {
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Edit post');
+    }
+
+    /**
+     * Кнопка редактирования не отображается для авторизованных пользователей, не авторов публикации
+     */
+    public function testEditButtonAnotherAuthUser()
+    {
+        $this->signIn();
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Edit post');
+    }
+
+    /**
+     * Кнопка редактирования отображается для автор публикации
+     */
+    public function testEditButtonAuthor()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id, 'user_id' => $user]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertSee('Edit post');
+        $response->assertSee('/communities/' . $community->slug . '/posts/' . $post->slug . '/edit');
+    }
+
+    /**
+     * Кнопка удаления не отображается для гостей
+     */
+    public function testDeleteButtonGuest()
+    {
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Delete post');
+    }
+
+    /**
+     * Кнопка удаления не отображается для авторизованных пользователей, не авторов публикации
+     */
+    public function testDeleteButtonAnotherAuthUser()
+    {
+        $this->signIn();
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Delete post');
+    }
+
+    /**
+     * Кнопка редактирования отображается для автор публикации
+     */
+    public function testDeleteButtonAuthor()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id, 'user_id' => $user]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertSee('Delete post');
     }
 
     /**
