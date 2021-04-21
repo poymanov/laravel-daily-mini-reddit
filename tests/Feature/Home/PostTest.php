@@ -83,4 +83,21 @@ class PostTest extends TestCase
         $response->assertSee($secondPost->title);
         $response->assertDontSee($thirdPost->title);
     }
+
+    /**
+     * Просмотр с публикациями у которых есть изображения
+     */
+    public function testWithPostsAndImages()
+    {
+        $firstPost  = $this->createPost();
+        $secondPost = $this->createPost();
+
+        $firstLargeImage = $this->createPostImage(['type' => 'large', 'post_id' => $firstPost->id]);
+        $secondLargeImage = $this->createPostImage(['type' => 'large', 'post_id' => $secondPost->id]);
+
+        $response = $this->get('/');
+
+        $response->assertSee($firstLargeImage->name);
+        $response->assertSee($secondLargeImage->name);
+    }
 }

@@ -112,6 +112,23 @@ class ShowTest extends TestCase
     }
 
     /**
+     * Просмотр страницы сообщества с публикациями, у которых есть изображения
+     */
+    public function testWithPostsAndImages()
+    {
+        $community  = $this->createCommunity();
+        $firstPost  = $this->createPost(['community_id' => $community->id]);
+        $secondPost = $this->createPost(['community_id' => $community->id]);
+
+        $firstLargeImage  = $this->createPostImage(['type' => 'large', 'post_id' => $firstPost->id]);
+        $secondLargeImage = $this->createPostImage(['type' => 'large', 'post_id' => $secondPost->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug));
+        $response->assertSee($firstLargeImage->name);
+        $response->assertSee($secondLargeImage->name);
+    }
+
+    /**
      * Формирование пути для просмотра сообщества
      *
      * @param string $communitySlug
