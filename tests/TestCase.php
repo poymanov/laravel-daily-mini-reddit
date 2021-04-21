@@ -5,6 +5,7 @@ namespace Tests;
 use App\Models\Community;
 use App\Models\Post;
 use App\Models\PostImage;
+use App\Models\PostVote;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
@@ -92,6 +93,18 @@ abstract class TestCase extends BaseTestCase
     protected function createPostImage(array $params = []): PostImage
     {
         return PostImage::factory()->create($params);
+    }
+
+    /**
+     * Создание сущности PostVote
+     *
+     * @param array $params
+     *
+     * @return PostVote
+     */
+    protected function createPostVote(array $params = []): PostVote
+    {
+        return PostVote::factory()->create($params);
     }
 
     /**

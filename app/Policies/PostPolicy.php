@@ -69,6 +69,17 @@ class PostPolicy
     }
 
     /**
+     * @param User $user
+     * @param Post $post
+     *
+     * @return bool
+     */
+    public function vote(User $user, Post $post): bool
+    {
+        return $user->id != $post->user_id;
+    }
+
+    /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
