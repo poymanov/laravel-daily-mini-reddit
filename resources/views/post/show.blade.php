@@ -20,24 +20,28 @@
                         </div>
                     @endcan
 
-                    @can('vote', $post)
-                        <div class="p-6 bg-white mb-5 sm:rounded-lg">
-                            @if(!$post->current_user_like)
-                                <form action="{{ route('communities.posts.votes.store', [$community, $post]) }}" method="post" class="mr-2">
-                                    @csrf
-                                    <input type="hidden" name="vote" value="1">
-                                    <button class="px-2 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Like post</button>
-                                </form>
-                            @endif
-                            @if(!$post->current_user_dislike)
-                                <form action="{{ route('communities.posts.votes.store', [$community, $post]) }}" method="post">
-                                    @csrf
-                                    <input type="hidden" name="vote" value="-1">
-                                    <button class="px-2 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Dislike post</button>
-                                </form>
-                            @endif
+
+                    <div class="p-6 bg-white mb-5 sm:rounded-lg">
+                        <div class="flex items-center">
+                            <div class="mr-2">Rating: {{ $post->rating }}</div>
+                            @can('vote', $post)
+                                @if(!$post->current_user_like)
+                                    <form action="{{ route('communities.posts.votes.store', [$community, $post]) }}" method="post" class="mr-2">
+                                        @csrf
+                                        <input type="hidden" name="vote" value="1">
+                                        <button class="px-2 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Like post</button>
+                                    </form>
+                                @endif
+                                @if(!$post->current_user_dislike)
+                                    <form action="{{ route('communities.posts.votes.store', [$community, $post]) }}" method="post">
+                                        @csrf
+                                        <input type="hidden" name="vote" value="-1">
+                                        <button class="px-2 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Dislike post</button>
+                                    </form>
+                                @endif
+                            @endcan
                         </div>
-                    @endcan
+                    </div>
 
                     <div class="p-6 bg-white">
                         <h1 class="text-4xl mb-3 break-all">{{ $post->title }}</h1>
