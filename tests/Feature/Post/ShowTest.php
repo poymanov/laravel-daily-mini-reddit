@@ -182,6 +182,96 @@ class ShowTest extends TestCase
     }
 
     /**
+     * Гость не видит кнопки голосования за пост
+     */
+    public function testGuestDontSeeVoteButtons()
+    {
+        $community = $this->createCommunity();
+        $post = $this->createPost(['community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Like post');
+        $response->assertDontSee('Dislike post');
+    }
+
+    /**
+     * Автор поста не видит кнопки голосования за пост
+     */
+    public function testPostAuthorDontSeeVoteButtons()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post = $this->createPost(['user_id' => $user->id, 'community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Like post');
+        $response->assertDontSee('Dislike post');
+    }
+
+    /**
+     * Авторизованный пользователь видит кнопки голосования за пост
+     */
+    public function testAuthSeeVoteButtons()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post = $this->createPost(['community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertSee('Like post');
+        $response->assertSee('Dislike post');
+    }
+
+    /**
+     * Если пользователь поставил публикации лайк, он не видит этой кнопки
+     */
+    public function testDontSeeLikeButton()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post = $this->createPost(['community_id' => $community->id]);
+
+        $this->createPostVote(['post_id' => $post->id, 'user_id' => $user->id, 'vote' => 1]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Like post');
+        $response->assertSee('Dislike post');
+    }
+
+    /**
+     * Если пользователь поставил публикации дизлайк, он не видит этой кнопки
+     */
+    public function testDontSeeDislikeButton()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $this->createPostVote(['post_id' => $post->id, 'user_id' => $user->id, 'vote' => -1]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertSee('Like post');
+        $response->assertDontSee('Dislike post');
+    }
+
+    /**
      * Формирование пути для просмотра публикации
      *
      * @param string $communitySlug

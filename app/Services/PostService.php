@@ -49,6 +49,25 @@ class PostService
     }
 
     /**
+     * Получение публикации с данными по голосованиям пользователя
+     *
+     * @param int      $postId
+     * @param int|null $userId
+     *
+     * @return Post|Builder|\Illuminate\Database\Eloquent\Model|object|null
+     */
+    public function getPostWithUserVotes(int $postId, ?int $userId)
+    {
+        $query = Post::whereId($postId);
+
+        if ($userId) {
+            $query = $this->modifyQueryWithUserVotes($query, $userId);
+        }
+
+        return $query->first();
+    }
+
+    /**
      * @param Builder $query
      * @param int     $userId
      *

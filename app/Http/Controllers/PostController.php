@@ -8,6 +8,7 @@ use App\Http\Requests\Post\CreateRequest;
 use App\Http\Requests\Post\UpdateRequest;
 use App\Models\Community;
 use App\Models\Post;
+use App\Services\PostService;
 use App\UseCases\Post\Create;
 use App\UseCases\Post\Update;
 use App\UseCases\Post\Delete;
@@ -17,6 +18,16 @@ use Throwable;
 
 class PostController extends Controller
 {
+    private PostService $postService;
+
+    /**
+     * @param PostService $postService
+     */
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     /**
      * @param Community $community
      *
@@ -153,6 +164,8 @@ class PostController extends Controller
         if ($community->id != $post->community_id) {
             abort(Response::HTTP_NOT_FOUND);
         }
+
+        $post = $this->postService->getPostWithUserVotes($post->id, (int) auth()->id());
 
         return view('post.show', compact('community', 'post'));
     }
