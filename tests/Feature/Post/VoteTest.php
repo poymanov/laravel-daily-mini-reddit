@@ -151,6 +151,7 @@ class VoteTest extends TestCase
 
         $response = $this->post($this->buildVoteUrl($community->slug, $post->slug), ['vote' => 1]);
         $response->assertSessionHasNoErrors();
+        $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseHas('post_votes', [
             'post_id' => $post->id,
@@ -173,6 +174,7 @@ class VoteTest extends TestCase
 
         $response = $this->post($this->buildVoteUrl($community->slug, $post->slug), ['vote' => 1]);
         $response->assertSessionHasNoErrors();
+        $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseCount('post_votes', 1);
 
@@ -203,6 +205,7 @@ class VoteTest extends TestCase
 
         $response = $this->post($this->buildVoteUrl($community->slug, $post->slug), ['vote' => 1]);
         $response->assertSessionHasNoErrors();
+        $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseCount('post_votes', 1);
 

@@ -92,12 +92,95 @@ class PostTest extends TestCase
         $firstPost  = $this->createPost();
         $secondPost = $this->createPost();
 
-        $firstLargeImage = $this->createPostImage(['type' => 'large', 'post_id' => $firstPost->id]);
+        $firstLargeImage  = $this->createPostImage(['type' => 'large', 'post_id' => $firstPost->id]);
         $secondLargeImage = $this->createPostImage(['type' => 'large', 'post_id' => $secondPost->id]);
 
         $response = $this->get('/');
 
         $response->assertSee($firstLargeImage->name);
         $response->assertSee($secondLargeImage->name);
+    }
+
+    /**
+     * Гость не видит кнопки голосования за пост
+     */
+    public function testGuestDontSeeVoteButtons()
+    {
+        $this->createPost();
+
+        $response = $this->get('/');
+
+        $response->assertDontSee('Like post');
+        $response->assertDontSee('Dislike post');
+    }
+
+    /**
+     * Автор поста не видит кнопки голосования за пост
+     */
+    public function testPostAuthorDontSeeVoteButtons()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $this->createPost(['user_id' => $user->id]);
+
+        $response = $this->get('/');
+
+        $response->assertDontSee('Like post');
+        $response->assertDontSee('Dislike post');
+    }
+
+    /**
+     * Авторизованный пользователь видит кнопки голосования за пост
+     */
+    public function testAuthSeeVoteButtons()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $this->createPost();
+
+        $response = $this->get('/');
+
+        $response->assertSee('Like post');
+        $response->assertSee('Dislike post');
+    }
+
+    /**
+     * Если пользователь поставил публикации лайк, он не видит этой кнопки
+     */
+    public function testDontSeeLikeButton()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $post = $this->createPost();
+        $this->createPostVote(['post_id' => $post->id, 'user_id' => $user->id, 'vote' => 1]);
+
+        $response = $this->get('/');
+
+        $response->assertDontSee('Like post');
+        $response->assertSee('Dislike post');
+    }
+
+    /**
+     * Если пользователь поставил публикации дизлайк, он не видит этой кнопки
+     */
+    public function testDontSeeDislikeButton()
+    {
+        $user = $this->createUser();
+
+        $this->signIn($user);
+
+        $post = $this->createPost();
+        $this->createPostVote(['post_id' => $post->id, 'user_id' => $user->id, 'vote' => -1]);
+
+        $response = $this->get('/');
+
+        $response->assertSee('Like post');
+        $response->assertDontSee('Dislike post');
     }
 }

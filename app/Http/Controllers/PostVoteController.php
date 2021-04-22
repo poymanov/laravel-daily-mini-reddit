@@ -24,19 +24,19 @@ class PostVoteController extends Controller
     {
         $this->authorize('vote', $post);
 
-        $command = new Create\Command();
-        $command->userId = (int) auth()->id();
+        $command              = new Create\Command();
+        $command->userId      = (int) auth()->id();
         $command->communityId = $community->id;
-        $command->postId = $post->id;
-        $command->vote = $request->get('vote');
+        $command->postId      = $post->id;
+        $command->vote        = (int) $request->get('vote');
 
         try {
             $handler = new Create\Handler();
             $handler->handle($command);
 
-            return redirect()->back()->with('success', 'Successfully voting');
+            return redirect()->back()->with('alert.success', 'Successfully voting');
         } catch (Exception $exception) {
-            return redirect()->back()->with('error', 'Failed to voting');
+            return redirect()->back()->with('alert.error', 'Failed to voting');
         }
     }
 }

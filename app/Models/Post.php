@@ -45,6 +45,8 @@ use Storage;
  * @property-read string|null                                                      $large_image_url
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PostImage[] $largeImage
  * @property-read int|null                                                         $large_image_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PostVote[] $votes
+ * @property-read int|null $votes_count
  */
 class Post extends Model
 {
@@ -78,6 +80,14 @@ class Post extends Model
     public function community()
     {
         return $this->belongsTo(Community::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function votes()
+    {
+        return $this->hasMany(PostVote::class);
     }
 
     /**

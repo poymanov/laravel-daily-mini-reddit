@@ -30,7 +30,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $posts                     = $this->postService->getAllLatest();
+        $posts                     = $this->postService->getAllLatest((int) auth()->id());
         $communities               = $this->communityService->getAllLatestWithLimit();
         $homePostsTextPreviewLimit = config('custom.home_posts_text_preview_limit');
 

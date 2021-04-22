@@ -45,7 +45,7 @@ class CommunityController extends Controller
     {
         $communityPostsTextPreviewLimit = config('custom.community_posts_text_preview_limit');
 
-        $posts = $this->postService->getAllLatestByCommunityId($community->id);
+        $posts = $this->postService->getAllLatestByCommunityId($community->id, (int) auth()->id());
 
         return view('community.show', compact('community', 'posts', 'communityPostsTextPreviewLimit'));
     }
