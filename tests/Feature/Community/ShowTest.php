@@ -243,6 +243,54 @@ class ShowTest extends TestCase
     }
 
     /**
+     * Отображение нулевого рейтинга публикации
+     */
+    public function testRenderNullPostRating()
+    {
+        $this->createPost();
+
+        $community = $this->createCommunity();
+        $this->createPost(['community_id' => $community->id]);
+
+        $response = $this->get($this->buildShowUrl($community->slug));
+
+        $response->assertSee('Rating: 0');
+    }
+
+    /**
+     * Отображение положительного рейтинга публикации
+     */
+    public function testRenderPositivePostRating()
+    {
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $this->createPostVote(['post_id' => $post->id, 'vote' => 1]);
+        $this->createPostVote(['post_id' => $post->id, 'vote' => 1]);
+
+        $response = $this->get($this->buildShowUrl($community->slug));
+
+        $response->assertSee('Rating: 2');
+    }
+
+    /**
+     * Отображение отрицательного рейтинга публикации
+     */
+    public function testRenderNegativePostRating()
+    {
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $this->createPostVote(['post_id' => $post->id, 'vote' => -1]);
+        $this->createPostVote(['post_id' => $post->id, 'vote' => -1]);
+        $this->createPostVote(['post_id' => $post->id, 'vote' => -1]);
+
+        $response = $this->get($this->buildShowUrl($community->slug));
+
+        $response->assertSee('Rating: -3');
+    }
+
+    /**
      * Формирование пути для просмотра сообщества
      *
      * @param string $communitySlug

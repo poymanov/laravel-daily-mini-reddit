@@ -47,6 +47,7 @@ use Storage;
  * @property-read int|null                                                         $large_image_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PostVote[] $votes
  * @property-read int|null $votes_count
+ * @property-read int $rating
  */
 class Post extends Model
 {
@@ -111,5 +112,13 @@ class Post extends Model
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getRatingAttribute(): int
+    {
+        return $this->votes()->sum('vote');
     }
 }

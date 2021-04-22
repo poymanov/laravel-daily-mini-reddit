@@ -183,4 +183,47 @@ class PostTest extends TestCase
         $response->assertSee('Like post');
         $response->assertDontSee('Dislike post');
     }
+
+    /**
+     * Отображение нулевого рейтинга публикации
+     */
+    public function testRenderNullPostRating()
+    {
+        $this->createPost();
+
+        $response = $this->get('/');
+
+        $response->assertSee('Rating: 0');
+    }
+
+    /**
+     * Отображение положительного рейтинга публикации
+     */
+    public function testRenderPositivePostRating()
+    {
+        $post = $this->createPost();
+
+        $this->createPostVote(['post_id' => $post->id, 'vote' => 1]);
+        $this->createPostVote(['post_id' => $post->id, 'vote' => 1]);
+
+        $response = $this->get('/');
+
+        $response->assertSee('Rating: 2');
+    }
+
+    /**
+     * Отображение отрицательного рейтинга публикации
+     */
+    public function testRenderNegativePostRating()
+    {
+        $post = $this->createPost();
+
+        $this->createPostVote(['post_id' => $post->id, 'vote' => -1]);
+        $this->createPostVote(['post_id' => $post->id, 'vote' => -1]);
+        $this->createPostVote(['post_id' => $post->id, 'vote' => -1]);
+
+        $response = $this->get('/');
+
+        $response->assertSee('Rating: -3');
+    }
 }
