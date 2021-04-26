@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Post;
+namespace Tests\Feature\Post\Post;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

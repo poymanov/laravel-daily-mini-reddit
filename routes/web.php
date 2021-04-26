@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostVoteController;
 use App\Http\Controllers\Profile\CommunityController as ProfileCommunityController;
@@ -29,6 +30,7 @@ Route::group(['prefix' => 'communities', 'as' => 'community.'], function () {
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::resource('communities.posts', PostController::class)->except('show');
     Route::resource('communities.posts.votes', PostVoteController::class)->only('store');
+    Route::resource('communities.posts.comments', PostCommentController::class)->except(['show', 'index']);
 });
 
 Route::get('/communities/{community}/posts/{post}', [PostController::class, 'show'])->name('communities.posts.show');
