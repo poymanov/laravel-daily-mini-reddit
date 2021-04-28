@@ -4,6 +4,7 @@ namespace Tests;
 
 use App\Models\Community;
 use App\Models\Post;
+use App\Models\PostComment;
 use App\Models\PostImage;
 use App\Models\PostVote;
 use App\Models\User;
@@ -105,6 +106,18 @@ abstract class TestCase extends BaseTestCase
     protected function createPostVote(array $params = []): PostVote
     {
         return PostVote::factory()->create($params);
+    }
+
+    /**
+     * Создание сущности PostComment
+     *
+     * @param array $params
+     *
+     * @return PostComment
+     */
+    protected function createPostComment(array $params = []): PostComment
+    {
+        return PostComment::factory()->create($params);
     }
 
     /**

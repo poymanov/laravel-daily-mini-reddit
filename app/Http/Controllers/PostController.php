@@ -8,6 +8,7 @@ use App\Http\Requests\Post\CreateRequest;
 use App\Http\Requests\Post\UpdateRequest;
 use App\Models\Community;
 use App\Models\Post;
+use App\Services\PostCommentService;
 use App\Services\PostService;
 use App\UseCases\Post\Create;
 use App\UseCases\Post\Update;
@@ -20,12 +21,16 @@ class PostController extends Controller
 {
     private PostService $postService;
 
+    private PostCommentService $postCommentService;
+
     /**
-     * @param PostService $postService
+     * @param PostService        $postService
+     * @param PostCommentService $postCommentService
      */
-    public function __construct(PostService $postService)
+    public function __construct(PostService $postService, PostCommentService $postCommentService)
     {
-        $this->postService = $postService;
+        $this->postService        = $postService;
+        $this->postCommentService = $postCommentService;
     }
 
     /**
@@ -165,8 +170,9 @@ class PostController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
-        $post = $this->postService->getPostWithUserVotes($post->id, (int) auth()->id());
+        $comments = $this->postCommentService->getAllByPostId($post->id);
+        $post     = $this->postService->getPostWithUserVotes($post->id, (int) auth()->id());
 
-        return view('post.show', compact('community', 'post'));
+        return view('post.show', compact('community', 'post', 'comments'));
     }
 }

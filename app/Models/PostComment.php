@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\PostCommentFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|PostComment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PostComment newQuery()
  * @method static \Illuminate\Database\Query\Builder|PostComment onlyTrashed()
@@ -35,4 +37,12 @@ class PostComment extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

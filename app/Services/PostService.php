@@ -84,11 +84,4 @@ class PostService
             },
         ]);
     }
-//
-//    private function modifyQueryWithRating(Builder $query): Builder
-//    {
-//        return $query->with([
-//
-//        ]);
-//    }
 }
