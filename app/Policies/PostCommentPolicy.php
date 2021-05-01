@@ -70,7 +70,7 @@ class PostCommentPolicy
      */
     public function delete(User $user, PostComment $postComment)
     {
-        //
+        return $user->id == $postComment->user_id && ($postComment->created_at && $postComment->created_at->diff(now())->days < 1);
     }
 
     /**

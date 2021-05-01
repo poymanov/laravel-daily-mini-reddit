@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\Response;
 use App\UseCases\PostComment\Create;
 use App\UseCases\PostComment\Update;
+use App\UseCases\PostComment\Delete;
 
 class PostCommentController extends Controller
 {
@@ -93,6 +94,37 @@ class PostCommentController extends Controller
             return redirect(route('communities.posts.show', [$community, $post]))->with('alert.success', 'Comment updated');
         } catch (Exception $e) {
             return redirect(route('communities.posts.show', [$community, $post]))->with('alert.error', 'Failed to updated comment');
+        }
+    }
+
+    /**
+     * @param Community $community
+     * @param Post $post
+     * @param PostComment $comment
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function destroy(Community $community, Post $post, PostComment $comment)
+    {
+        if ($community->id != $post->community_id || $post->id != $comment->post_id) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $this->authorize('delete', $comment);
+
+        try {
+            $command            = new Delete\Command();
+            $command->postId    = $post->id;
+            $command->commentId = $comment->id;
+            $command->userId    = (int) auth()->id();
+
+            $handler = new Delete\Handler();
+            $handler->handle($command);
+
+            return redirect(route('communities.posts.show', [$community, $post]))->with('alert.success', 'Comment deleted');
+        } catch (Exception $e) {
+            return redirect(route('communities.posts.show', [$community, $post]))->with('alert.error', 'Failed to delete comment');
         }
     }
 }
