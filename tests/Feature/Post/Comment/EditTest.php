@@ -123,6 +123,91 @@ class EditTest extends TestCase
     }
 
     /**
+     * Кнопка редактирования не отображается для гостей
+     */
+    public function testEditButtonForGuest()
+    {
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $comment = $this->createPostComment(['post_id' => $post->id]);
+        $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Edit Comment');
+        $response->assertDontSee($this->buildEditPostCommentUrl($community->slug, $post->slug, $comment->id));
+    }
+
+    /**
+     * Кнопка редактирования не отображается для пользователей с неподтвержденным email
+     */
+    public function testEditButtonForNotVerifiedUser()
+    {
+        $this->signIn(User::factory()->unverified()->create());
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $comment = $this->createPostComment(['post_id' => $post->id]);
+        $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Edit Comment');
+        $response->assertDontSee($this->buildEditPostCommentUrl($community->slug, $post->slug, $comment->id));
+    }
+
+    /**
+     * Кнопка редактирования не отображается для комментария другого пользователя
+     */
+    public function testEditButtonForNotOwner()
+    {
+        $this->signIn();
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $comment = $this->createPostComment(['post_id' => $post->id]);
+        $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Edit Comment');
+        $response->assertDontSee($this->buildEditPostCommentUrl($community->slug, $post->slug, $comment->id));
+    }
+
+    /**
+     * Кнопка редактирования не отображается для комментария, который был создан более суток назад
+     */
+    public function testEditButtonExpired()
+    {
+        $user = $this->createUser();
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $comment   = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id, 'created_at' => now()->subDays(2)]);
+        $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
+
+        $response->assertDontSee('Edit Comment');
+        $response->assertDontSee($this->buildEditPostCommentUrl($community->slug, $post->slug, $comment->id));
+    }
+
+    /**
+     * Отображение кнопки редактирования
+     */
+    public function testEditButtonSuccess()
+    {
+        $user = $this->createUser();
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $comment = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id]);
+        $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
+
+        $response->assertSee('Edit Comment');
+        $response->assertSee($this->buildEditPostCommentUrl($community->slug, $post->slug, $comment->id));
+    }
+
+    /**
      * Формирование пути для просмотра публикации
      *
      * @param string $communitySlug

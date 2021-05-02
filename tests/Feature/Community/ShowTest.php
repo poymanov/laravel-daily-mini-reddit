@@ -101,8 +101,8 @@ class ShowTest extends TestCase
     public function testWithPostsAndPagination()
     {
         $community  = $this->createCommunity();
-        $firstPost  = $this->createPost(['community_id' => $community->id]);
-        $secondPost = $this->createPost(['community_id' => $community->id]);
+        $firstPost  = $this->createPost(['community_id' => $community->id, 'created_at' => now()->addDays(2)]);
+        $secondPost = $this->createPost(['community_id' => $community->id, 'created_at' => now()->addDays(1)]);
         $thirdPost  = $this->createPost(['community_id' => $community->id]);
 
         $response = $this->get($this->buildShowUrl($community->slug));

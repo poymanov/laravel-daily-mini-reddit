@@ -63,7 +63,7 @@
                         @endif
                     </div>
                     @include('post._new_comment')
-                    @include('post._comments', compact('comments'))
+                    @include('post._comments', compact('comments', 'post', 'community'))
                 </div>
                 <div class="w-3/12 bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white">
