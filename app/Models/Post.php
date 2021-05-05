@@ -48,6 +48,8 @@ use Storage;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PostVote[] $votes
  * @property-read int|null $votes_count
  * @property-read int $rating
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PostComment[] $comments
+ * @property-read int|null $comments_count
  */
 class Post extends Model
 {
@@ -89,6 +91,14 @@ class Post extends Model
     public function votes()
     {
         return $this->hasMany(PostVote::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function comments()
+    {
+        return $this->hasMany(PostComment::class);
     }
 
     /**

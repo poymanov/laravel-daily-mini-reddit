@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\UseCases\Post\Delete;
 
 use App\Models\Post;
+use App\Models\PostComment;
 use App\Models\User;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class Handler
 {
@@ -33,6 +35,9 @@ class Handler
             throw new Exception('This user cannot delete this post (not owner)');
         }
 
-        $post->delete();
+        DB::transaction(function () use ($post) {
+            $post->delete();
+            $post->comments()->delete();
+        });
     }
 }

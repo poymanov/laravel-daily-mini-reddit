@@ -89,6 +89,39 @@ class DeleteTest extends TestCase
     }
 
     /**
+     * Удаление публикации вместе с комментариями
+     */
+    public function testSuccessWithComments()
+    {
+        $user      = $this->createUser();
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['user_id' => $user->id, 'community_id' => $community->id]);
+        $firstComment = $this->createPostComment(['post_id' => $post->id]);
+        $secondComment = $this->createPostComment(['post_id' => $post->id]);
+
+        $this->signIn($user);
+        $this->delete($this->buildDeleteUrl($community->slug, $post->slug));
+
+        $this->assertDatabaseHas('post_comments', [
+            'id' => $firstComment->id
+        ]);
+
+        $this->assertDatabaseHas('post_comments', [
+            'id' => $secondComment->id
+        ]);
+
+        $this->assertDatabaseMissing('post_comments', [
+            'id' => $firstComment->id,
+            'deleted_at' => null,
+        ]);
+
+        $this->assertDatabaseMissing('post_comments', [
+            'id' => $secondComment->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    /**
      * Формирование пути для удаления публикации
      *
      * @param string $communitySlug
