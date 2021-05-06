@@ -6,6 +6,7 @@ namespace App\UseCases\Community\Delete;
 
 use App\Models\Community;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class Handler
 {
@@ -22,6 +23,14 @@ class Handler
             throw new Exception('Failed to find community for delete');
         }
 
-        $community->delete();
+        DB::transaction(function () use ($community) {
+            foreach ($community->posts as $post) {
+                $post->comments()->delete();
+            }
+
+            $community->posts()->delete();
+
+            $community->delete();
+        });
     }
 }

@@ -85,4 +85,27 @@ class DeleteTest extends CommunityTestCase
             'deleted_at' => null,
         ]);
     }
+
+    /**
+     * Успешное удаление с публикациями и комментариями к ним
+     */
+    public function testSuccessWithPostsAndComments()
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+
+        $this->signIn($user);
+
+        $community = $this->createCommunity(['user_id' => $user->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['post_id' => $post->id]);
+
+        $this->delete($this->buildDeleteUrl($community->slug));
+
+        $this->assertDatabaseHas('posts', ['id' => $post->id]);
+        $this->assertDatabaseMissing('posts', ['id' => $post->id, 'deleted_at' => null]);
+
+        $this->assertDatabaseHas('post_comments', ['id' => $comment->id]);
+        $this->assertDatabaseMissing('post_comments', ['id' => $comment->id, 'deleted_at' => null]);
+    }
 }
