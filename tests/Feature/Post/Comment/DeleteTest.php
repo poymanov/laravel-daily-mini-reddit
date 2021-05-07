@@ -18,8 +18,8 @@ class DeleteTest extends TestCase
     public function testGuest()
     {
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
-        $comment   = $this->createPostComment(['post_id' => $post->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['post_id' => $post->id]);
 
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
         $response->assertRedirect(self::LOGIN_URL);
@@ -31,8 +31,8 @@ class DeleteTest extends TestCase
     public function testNotVerifiedUser()
     {
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
-        $comment   = $this->createPostComment(['post_id' => $post->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['post_id' => $post->id]);
 
         $this->signIn(User::factory()->unverified()->create());
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
@@ -45,8 +45,8 @@ class DeleteTest extends TestCase
     public function testNotOwner()
     {
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
-        $comment   = $this->createPostComment(['post_id' => $post->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['post_id' => $post->id]);
 
         $this->signIn();
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
@@ -62,8 +62,8 @@ class DeleteTest extends TestCase
         $this->signIn($user);
 
         $community = $this->createCommunity();
-        $post      = $this->createPost();
-        $comment   = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id]);
+        $post = $this->createPost();
+        $comment = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id]);
 
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
         $response->assertNotFound();
@@ -78,8 +78,8 @@ class DeleteTest extends TestCase
         $this->signIn($user);
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
-        $comment   = $this->createPostComment(['user_id' => $user->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['user_id' => $user->id]);
 
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
         $response->assertNotFound();
@@ -94,15 +94,15 @@ class DeleteTest extends TestCase
         $this->signIn($user);
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
-        $comment   = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id, 'created_at' => now()->subDays(2)]);
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id, 'created_at' => now()->subDays(2)]);
 
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
         $response->assertForbidden();
     }
 
     /**
-     * Успешное редактирование
+     * Успешное удаление
      */
     public function testSuccess()
     {
@@ -110,15 +110,35 @@ class DeleteTest extends TestCase
         $this->signIn($user);
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
-        $comment   = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id]);
 
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
         $response->assertRedirect($this->buildPostShowUrl($community->slug, $post->slug));
         $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseMissing('post_comments', [
-            'id'   => $comment->id,
+            'id' => $comment->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    /**
+     * Успешное удаление комментариев пользователем-администратором
+     */
+    public function testSuccessAdmin()
+    {
+        $this->signIn($this->createAdmin());
+
+        $community = $this->createCommunity();
+        $post = $this->createPost(['community_id' => $community->id]);
+        $comment = $this->createPostComment(['post_id' => $post->id]);
+
+        $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
+        $response->assertSessionHas('alert.success');
+
+        $this->assertDatabaseMissing('post_comments', [
+            'id' => $comment->id,
             'deleted_at' => null,
         ]);
     }
@@ -129,7 +149,7 @@ class DeleteTest extends TestCase
     public function testDeleteButtonForGuest()
     {
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
 
         $comment = $this->createPostComment(['post_id' => $post->id]);
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
@@ -146,7 +166,7 @@ class DeleteTest extends TestCase
         $this->signIn(User::factory()->unverified()->create());
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
 
         $comment = $this->createPostComment(['post_id' => $post->id]);
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
@@ -163,7 +183,7 @@ class DeleteTest extends TestCase
         $this->signIn();
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
 
         $comment = $this->createPostComment(['post_id' => $post->id]);
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
@@ -181,9 +201,9 @@ class DeleteTest extends TestCase
         $this->signIn($user);
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
 
-        $comment   = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id, 'created_at' => now()->subDays(2)]);
+        $comment = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id, 'created_at' => now()->subDays(2)]);
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
 
         $response->assertDontSee('Delete Comment');
@@ -199,7 +219,7 @@ class DeleteTest extends TestCase
         $this->signIn($user);
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
+        $post = $this->createPost(['community_id' => $community->id]);
 
         $comment = $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id]);
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
@@ -226,7 +246,7 @@ class DeleteTest extends TestCase
      *
      * @param string $communitySlug
      * @param string $postSlug
-     * @param int    $commentId
+     * @param int $commentId
      *
      * @return string
      */

@@ -9,6 +9,7 @@ use App\Models\PostImage;
 use App\Models\PostVote;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Spatie\Permission\Models\Role;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -44,6 +45,23 @@ abstract class TestCase extends BaseTestCase
         }
 
         return $factory->create($params);
+    }
+
+    /**
+     * Создание пользователя с правами администратора
+     *
+     * @param array $params
+     * @return User|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed
+     */
+    protected function createAdmin(array $params = [])
+    {
+        Role::create(['name' => 'admin']);
+
+        /** @var User $user */
+        $user = User::factory($params)->create();
+        $user->assignRole('admin');
+
+        return $user;
     }
 
     /**

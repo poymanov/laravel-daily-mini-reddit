@@ -36,7 +36,7 @@ class Handler
             throw new Exception('Failed to find comment');
         }
 
-        if ($comment->user_id != $command->userId) {
+        if ($comment->user_id != $command->userId && !$user->hasRole('admin')) {
             throw new Exception('Failed to delete comment (not owner)');
         }
 
