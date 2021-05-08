@@ -79,6 +79,7 @@ class DeleteTest extends TestCase
 
         $this->signIn($user);
         $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug));
+        $response->assertSessionHas('alert.success');
 
         $response->assertRedirect($this->buildCommunitiesUrl());
 
@@ -100,7 +101,8 @@ class DeleteTest extends TestCase
         $secondComment = $this->createPostComment(['post_id' => $post->id]);
 
         $this->signIn($user);
-        $this->delete($this->buildDeleteUrl($community->slug, $post->slug));
+        $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug));
+        $response->assertSessionHas('alert.success');
 
         $this->assertDatabaseHas('post_comments', [
             'id' => $firstComment->id
@@ -117,6 +119,25 @@ class DeleteTest extends TestCase
 
         $this->assertDatabaseMissing('post_comments', [
             'id' => $secondComment->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    /**
+     * Успешное удаление администратором
+     */
+    public function testSuccessAdmin()
+    {
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
+
+        $this->signIn($this->createAdmin());
+
+        $response = $this->delete($this->buildDeleteUrl($community->slug, $post->slug));
+        $response->assertSessionHas('alert.success');
+
+        $this->assertDatabaseMissing('posts', [
+            'id'         => $post->id,
             'deleted_at' => null,
         ]);
     }

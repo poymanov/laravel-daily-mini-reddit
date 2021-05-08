@@ -165,7 +165,7 @@ class ShowTest extends TestCase
     }
 
     /**
-     * Кнопка редактирования отображается для автор публикации
+     * Кнопка удаления отображается для автор публикации
      */
     public function testDeleteButtonAuthor()
     {
@@ -175,6 +175,21 @@ class ShowTest extends TestCase
 
         $community = $this->createCommunity();
         $post      = $this->createPost(['community_id' => $community->id, 'user_id' => $user]);
+
+        $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
+
+        $response->assertSee('Delete post');
+    }
+
+    /**
+     * Кнопка удаления отображается для администратора
+     */
+    public function testDeleteButtonAdmin()
+    {
+        $this->signIn($this->createAdmin());
+
+        $community = $this->createCommunity();
+        $post      = $this->createPost(['community_id' => $community->id]);
 
         $response = $this->get($this->buildShowUrl($community->slug, $post->slug));
 

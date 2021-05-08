@@ -31,7 +31,7 @@ class Handler
             throw new Exception('Failed to find post');
         }
 
-        if ($post->user_id != $command->userId) {
+        if ($post->user_id != $command->userId && !$user->hasRole('admin')) {
             throw new Exception('This user cannot delete this post (not owner)');
         }
 

@@ -229,6 +229,23 @@ class DeleteTest extends TestCase
     }
 
     /**
+     * Отображение кнопки удаления для администратора
+     */
+    public function testDeleteButtonSuccessAdmin()
+    {
+        $this->signIn($this->createAdmin());
+
+        $community = $this->createCommunity();
+        $post = $this->createPost(['community_id' => $community->id]);
+
+        $comment = $this->createPostComment(['post_id' => $post->id]);
+        $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
+
+        $response->assertSee('Delete Comment');
+        $response->assertSee($this->buildDeleteUrl($community->slug, $post->slug, $comment->id));
+    }
+
+    /**
      * Формирование пути для просмотра публикации
      *
      * @param string $communitySlug
