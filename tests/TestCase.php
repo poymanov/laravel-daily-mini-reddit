@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Enums\RoleEnum;
 use App\Models\Community;
 use App\Models\Post;
 use App\Models\PostComment;
@@ -55,11 +56,9 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createAdmin(array $params = [])
     {
-        Role::create(['name' => 'admin']);
-
         /** @var User $user */
         $user = User::factory($params)->create();
-        $user->assignRole('admin');
+        $user->assignRole(RoleEnum::ADMIN);
 
         return $user;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -65,7 +66,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post)
     {
-        return $user->hasRole('admin') || $user->id == $post->user_id;
+        return $user->hasRole(RoleEnum::ADMIN) || $user->id == $post->user_id;
     }
 
     /**

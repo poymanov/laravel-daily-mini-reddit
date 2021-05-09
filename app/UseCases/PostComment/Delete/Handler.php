@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\UseCases\PostComment\Delete;
 
+use App\Enums\RoleEnum;
 use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\User;
@@ -36,7 +37,7 @@ class Handler
             throw new Exception('Failed to find comment');
         }
 
-        if ($comment->user_id != $command->userId && !$user->hasRole('admin')) {
+        if ($comment->user_id != $command->userId && !$user->hasRole(RoleEnum::ADMIN)) {
             throw new Exception('Failed to delete comment (not owner)');
         }
 

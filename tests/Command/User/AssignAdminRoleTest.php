@@ -6,7 +6,6 @@ namespace Command\User;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Psy\Command\ExitCommand;
-use Spatie\Permission\Exceptions\RoleDoesNotExist;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Tests\TestCase;
 
@@ -49,25 +48,11 @@ class AssignAdminRoleTest extends TestCase
     }
 
     /**
-     * Роль администратора не создана
-     */
-    public function testAdminRoleNotExists()
-    {
-        $user = $this->createUser();
-
-        $this->expectException(RoleDoesNotExist::class);
-
-        $this->artisan('users:assign-admin-role ' . $user->email);
-    }
-
-    /**
      * Успешное назначение роли
      */
     public function testSuccess()
     {
         $user = $this->createUser();
-
-        $this->artisan('role:create-admin');
 
         $this->artisan('users:assign-admin-role ' . $user->email)
             ->expectsOutput('Success')

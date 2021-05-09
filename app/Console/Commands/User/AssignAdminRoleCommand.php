@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\User;
 
+use App\Enums\RoleEnum;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Psy\Command\ExitCommand;
@@ -43,7 +44,7 @@ class AssignAdminRoleCommand extends Command
             return ExitCommand::FAILURE;
         }
 
-        $user->assignRole('admin');
+        $user->assignRole(RoleEnum::ADMIN);
 
         $this->info('Success');
 

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
 use App\Models\PostComment;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -70,7 +71,7 @@ class PostCommentPolicy
      */
     public function delete(User $user, PostComment $postComment)
     {
-        return $user->hasRole('admin') ||
+        return $user->hasRole(RoleEnum::ADMIN) ||
             ($user->id == $postComment->user_id && ($postComment->created_at && $postComment->created_at->diff(now())->days < 1));
     }
 
