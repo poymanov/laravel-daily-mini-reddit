@@ -71,7 +71,7 @@ class PostCommentPolicy
      */
     public function delete(User $user, PostComment $postComment)
     {
-        return $user->hasRole(RoleEnum::ADMIN) ||
+        return $this->isUserAdmin($user) ||
             ($user->id == $postComment->user_id && ($postComment->created_at && $postComment->created_at->diff(now())->days < 1));
     }
 
@@ -99,5 +99,16 @@ class PostCommentPolicy
     public function forceDelete(User $user, PostComment $postComment)
     {
         //
+    }
+
+    /**
+     * Проверка, является ли пользователь администратором
+     *
+     * @param User $user
+     * @return bool
+     */
+    private function isUserAdmin(User $user): bool
+    {
+        return $user->hasRole(RoleEnum::ADMIN);
     }
 }

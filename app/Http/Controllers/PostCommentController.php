@@ -9,6 +9,7 @@ use App\Http\Requests\PostComment\UpdateRequest;
 use App\Models\Community;
 use App\Models\Post;
 use App\Models\PostComment;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Response;
 use App\UseCases\PostComment\Create;
@@ -17,6 +18,18 @@ use App\UseCases\PostComment\Delete;
 
 class PostCommentController extends Controller
 {
+    /** @var UserService */
+    private UserService $userService;
+
+    /**
+     * PostCommentController constructor.
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * @param CreateRequest $request
      * @param Community     $community
@@ -119,7 +132,7 @@ class PostCommentController extends Controller
             $command->commentId = $comment->id;
             $command->userId    = (int) auth()->id();
 
-            $handler = new Delete\Handler();
+            $handler = new Delete\Handler($this->userService);
             $handler->handle($command);
 
             return redirect(route('communities.posts.show', [$community, $post]))->with('alert.success', 'Comment deleted');

@@ -10,6 +10,7 @@ use App\Models\Community;
 use App\Models\Post;
 use App\Services\PostCommentService;
 use App\Services\PostService;
+use App\Services\UserService;
 use App\UseCases\Post\Create;
 use App\UseCases\Post\Update;
 use App\UseCases\Post\Delete;
@@ -19,18 +20,25 @@ use Throwable;
 
 class PostController extends Controller
 {
+    /** @var PostService */
     private PostService $postService;
 
+    /** @var PostCommentService */
     private PostCommentService $postCommentService;
 
+    /** @var UserService */
+    private UserService $userService;
+
     /**
-     * @param PostService        $postService
+     * @param PostService $postService
      * @param PostCommentService $postCommentService
+     * @param UserService $userService
      */
-    public function __construct(PostService $postService, PostCommentService $postCommentService)
+    public function __construct(PostService $postService, PostCommentService $postCommentService, UserService $userService)
     {
-        $this->postService        = $postService;
+        $this->postService = $postService;
         $this->postCommentService = $postCommentService;
+        $this->userService = $userService;
     }
 
     /**
@@ -149,7 +157,7 @@ class PostController extends Controller
         $command->userId = (int) auth()->id();
 
         try {
-            $handler = new Delete\Handler();
+            $handler = new Delete\Handler($this->userService);
             $handler->handle($command);
 
             return redirect(route('community.index'))->with('alert.success', 'Post deleted');

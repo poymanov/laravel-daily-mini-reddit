@@ -11,6 +11,19 @@ use Illuminate\Database\Eloquent\Collection;
 class CommunityService
 {
     /**
+     * Получение списка всех сущностей
+     *
+     * @param int|null $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getAll(int $perPage = null): LengthAwarePaginator
+    {
+        $perPage = $perPage ?? config('pagination.profile_community');
+
+        return Community::paginate($perPage);
+    }
+
+    /**
      * Получение списка всех сущностей пользователя
      *
      * @param int      $userId

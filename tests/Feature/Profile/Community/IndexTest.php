@@ -124,6 +124,20 @@ class IndexTest extends CommunityTestCase
     }
 
     /**
+     * Отображение любых сообществ для администратора
+     */
+    public function testSuccessAdmin()
+    {
+        $this->signIn($this->createAdmin());
+
+        $community = $this->createCommunity();
+
+        $response = $this->get(self::COMMON_URL);
+
+        $response->assertSee($community->name);
+    }
+
+    /**
      * Удаленные сущности не отображаются
      */
     public function testCannotBeRenderedDeleted()

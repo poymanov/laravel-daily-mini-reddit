@@ -7,6 +7,7 @@ use App\Http\Requests\Community\CreateRequest;
 use App\Http\Requests\Community\UpdateRequest;
 use App\Models\Community;
 use App\Services\CommunityService;
+use App\Services\UserService;
 use App\UseCases\Community\Create;
 use App\UseCases\Community\Update;
 use App\UseCases\Community\Delete;
@@ -16,21 +17,30 @@ use Throwable;
 class CommunityController extends Controller
 {
     private CommunityService $communityService;
+    private UserService $userService;
 
     /**
+     * CommunityController constructor.
      * @param CommunityService $communityService
+     * @param UserService $userService
      */
-    public function __construct(CommunityService $communityService)
+    public function __construct(CommunityService $communityService, UserService $userService)
     {
         $this->communityService = $communityService;
+        $this->userService = $userService;
     }
 
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Exception
      */
     public function index()
     {
-        $communities = $this->communityService->getAllByUserId((int) auth()->id());
+        $userId = (int)auth()->id();
+
+        $communities = $this->userService->isAdmin($userId) ?
+            $this->communityService->getAll() :
+            $this->communityService->getAllByUserId($userId);
 
         return view('profile.community.index', compact('communities'));
     }
@@ -51,10 +61,10 @@ class CommunityController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        $command              = new Create\Command();
-        $command->name        = $request->get('name');
+        $command = new Create\Command();
+        $command->name = $request->get('name');
         $command->description = $request->get('description');
-        $command->userId      = (int) auth()->id();
+        $command->userId = (int)auth()->id();
 
         try {
             $handler = new Create\Handler();
@@ -93,7 +103,7 @@ class CommunityController extends Controller
 
     /**
      * @param UpdateRequest $request
-     * @param Community     $community
+     * @param Community $community
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -102,9 +112,9 @@ class CommunityController extends Controller
     {
         $this->authorize('update', $community);
 
-        $command              = new Update\Command();
-        $command->id          = $community->id;
-        $command->name        = $request->get('name');
+        $command = new Update\Command();
+        $command->id = $community->id;
+        $command->name = $request->get('name');
         $command->description = $request->get('description');
 
         try {
@@ -127,7 +137,7 @@ class CommunityController extends Controller
     {
         $this->authorize('delete', $community);
 
-        $command     = new Delete\Command();
+        $command = new Delete\Command();
         $command->id = $community->id;
 
         try {

@@ -4,15 +4,26 @@ declare(strict_types=1);
 
 namespace App\UseCases\Post\Delete;
 
-use App\Enums\RoleEnum;
 use App\Models\Post;
-use App\Models\PostComment;
 use App\Models\User;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
 class Handler
 {
+    /** @var UserService */
+    private UserService $userService;
+
+    /**
+     * Handler constructor.
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * @param Command $command
      *
@@ -32,7 +43,7 @@ class Handler
             throw new Exception('Failed to find post');
         }
 
-        if ($post->user_id != $command->userId && !$user->hasRole(RoleEnum::ADMIN)) {
+        if ($post->user_id != $command->userId && !$this->userService->isAdmin($user->id)) {
             throw new Exception('This user cannot delete this post (not owner)');
         }
 

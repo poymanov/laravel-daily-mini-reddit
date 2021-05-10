@@ -66,7 +66,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post)
     {
-        return $user->hasRole(RoleEnum::ADMIN) || $user->id == $post->user_id;
+        return $this->isUserAdmin($user) || $user->id == $post->user_id;
     }
 
     /**
@@ -102,5 +102,16 @@ class PostPolicy
     public function forceDelete(User $user, Post $post)
     {
         //
+    }
+
+    /**
+     * Проверка, является ли пользователь администратором
+     *
+     * @param User $user
+     * @return bool
+     */
+    private function isUserAdmin(User $user): bool
+    {
+        return $user->hasRole(RoleEnum::ADMIN);
     }
 }

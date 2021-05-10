@@ -8,10 +8,24 @@ use App\Enums\RoleEnum;
 use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\User;
+use App\Services\UserService;
 use Exception;
 
 class Handler
 {
+    /** @var UserService */
+    private UserService $userService;
+
+
+    /**
+     * Handler constructor.
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * @param Command $command
      *
@@ -37,7 +51,7 @@ class Handler
             throw new Exception('Failed to find comment');
         }
 
-        if ($comment->user_id != $command->userId && !$user->hasRole(RoleEnum::ADMIN)) {
+        if ($comment->user_id != $command->userId && !$this->userService->isAdmin($user->id)) {
             throw new Exception('Failed to delete comment (not owner)');
         }
 
