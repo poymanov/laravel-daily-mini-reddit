@@ -87,6 +87,24 @@ class DeleteTest extends CommunityTestCase
     }
 
     /**
+     * Успешное удаление сообщества администратором
+     */
+    public function testSuccessAdmin()
+    {
+        $this->signIn($this->createAdmin());
+
+        $community = $this->createCommunity();
+
+        $response = $this->delete($this->buildDeleteUrl($community->slug));
+        $response->assertSessionHas('alert.success');
+
+        $this->assertDatabaseMissing('communities', [
+            'id'         => $community->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    /**
      * Успешное удаление с публикациями и комментариями к ним
      */
     public function testSuccessWithPostsAndComments()
@@ -97,8 +115,8 @@ class DeleteTest extends CommunityTestCase
         $this->signIn($user);
 
         $community = $this->createCommunity(['user_id' => $user->id]);
-        $post = $this->createPost(['community_id' => $community->id]);
-        $comment = $this->createPostComment(['post_id' => $post->id]);
+        $post      = $this->createPost(['community_id' => $community->id]);
+        $comment   = $this->createPostComment(['post_id' => $post->id]);
 
         $this->delete($this->buildDeleteUrl($community->slug));
 

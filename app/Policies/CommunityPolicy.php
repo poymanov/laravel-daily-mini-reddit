@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
 use App\Models\Community;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -65,7 +66,7 @@ class CommunityPolicy
      */
     public function delete(User $user, Community $community)
     {
-        return $user->id == $community->user_id;
+        return $this->isUserAdmin($user) || $user->id == $community->user_id;
     }
 
     /**
@@ -90,5 +91,16 @@ class CommunityPolicy
     public function forceDelete(User $user, Community $community)
     {
         //
+    }
+
+    /**
+     * Проверка, является ли пользователь администратором
+     *
+     * @param User $user
+     * @return bool
+     */
+    private function isUserAdmin(User $user): bool
+    {
+        return $user->hasRole(RoleEnum::ADMIN);
     }
 }
