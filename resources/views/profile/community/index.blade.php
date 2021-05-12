@@ -40,7 +40,9 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end">
-                                                    <a href="{{ route('profile.communities.edit', $community) }}" class="mr-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Edit</a>
+                                                    @can('update', $community)
+                                                        <a href="{{ route('profile.communities.edit', $community) }}" class="mr-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Edit</a>
+                                                    @endcan
                                                     <form action="{{ route('profile.communities.destroy', $community) }}" method="post">
                                                         @csrf
                                                         @method('delete')

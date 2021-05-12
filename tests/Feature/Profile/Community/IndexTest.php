@@ -6,10 +6,7 @@ namespace Tests\Feature\Profile\Community;
 
 use App\Models\Community;
 use App\Models\User;
-use App\Services\CommunityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
-use Mockery\MockInterface;
 
 class IndexTest extends CommunityTestCase
 {
@@ -135,6 +132,20 @@ class IndexTest extends CommunityTestCase
         $response = $this->get(self::COMMON_URL);
 
         $response->assertSee($community->name);
+    }
+
+    /**
+     * Кнопка редактирования сообщества недоступна для администратора
+     */
+    public function testEditButtonCannotBeRenderedAdmin()
+    {
+        $this->signIn($this->createAdmin());
+
+        $this->createCommunity();
+
+        $response = $this->get(self::COMMON_URL);
+
+        $response->assertDontSee('Edit');
     }
 
     /**
