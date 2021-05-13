@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 });
 
 Route::get('/communities/{community}/posts/{post}', [PostController::class, 'show'])->name('communities.posts.show');
+Route::get('/communities/{community}/posts/{post}/comments/{comment}', [PostCommentController::class, 'show'])->name('communities.posts.comments.show');
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => ['auth', 'verified']], function () {
     Route::get('', [ProfileController::class, 'index'])->name('index');

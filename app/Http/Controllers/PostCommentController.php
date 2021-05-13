@@ -140,4 +140,20 @@ class PostCommentController extends Controller
             return redirect(route('communities.posts.show', [$community, $post]))->with('alert.error', 'Failed to delete comment');
         }
     }
+
+    /**
+     * @param Community   $community
+     * @param Post        $post
+     * @param PostComment $comment
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function show(Community $community, Post $post, PostComment $comment)
+    {
+        if ($community->id != $post->community_id || $post->id != $comment->post_id) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        return view('post.show_comment', compact('community', 'post', 'comment'));
+    }
 }

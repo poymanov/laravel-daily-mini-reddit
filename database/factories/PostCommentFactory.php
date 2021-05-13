@@ -31,4 +31,18 @@ class PostCommentFactory extends Factory
             'text'    => $this->faker->sentence(),
         ];
     }
+
+    /**
+     * Indicate that the model's email address should be unverified.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function deleted()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'deleted_at' => $this->faker->dateTime,
+            ];
+        });
+    }
 }

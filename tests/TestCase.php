@@ -129,12 +129,19 @@ abstract class TestCase extends BaseTestCase
      * Создание сущности PostComment
      *
      * @param array $params
+     * @param bool  $isDeleted
      *
      * @return PostComment
      */
-    protected function createPostComment(array $params = []): PostComment
+    protected function createPostComment(array $params = [], bool $isDeleted = false): PostComment
     {
-        return PostComment::factory()->create($params);
+        $factory = PostComment::factory();
+
+        if ($isDeleted) {
+            $factory = $factory->deleted();
+        }
+
+        return $factory->create($params);
     }
 
     /**
