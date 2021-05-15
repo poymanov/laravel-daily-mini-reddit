@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\PostImage;
 use App\Models\PostVote;
+use App\Models\Report;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Spatie\Permission\Models\Role;
@@ -52,6 +53,7 @@ abstract class TestCase extends BaseTestCase
      * Создание пользователя с правами администратора
      *
      * @param array $params
+     *
      * @return User|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed
      */
     protected function createAdmin(array $params = [])
@@ -136,6 +138,25 @@ abstract class TestCase extends BaseTestCase
     protected function createPostComment(array $params = [], bool $isDeleted = false): PostComment
     {
         $factory = PostComment::factory();
+
+        if ($isDeleted) {
+            $factory = $factory->deleted();
+        }
+
+        return $factory->create($params);
+    }
+
+    /**
+     * Создание сущности Report
+     *
+     * @param array $params
+     * @param bool  $isDeleted
+     *
+     * @return Report
+     */
+    protected function createReport(array $params = [], bool $isDeleted = false): Report
+    {
+        $factory = Report::factory();
 
         if ($isDeleted) {
             $factory = $factory->deleted();

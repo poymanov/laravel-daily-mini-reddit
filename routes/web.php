@@ -7,6 +7,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostVoteController;
 use App\Http\Controllers\Profile\CommunityController as ProfileCommunityController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,10 +32,16 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::resource('communities.posts', PostController::class)->except('show');
     Route::resource('communities.posts.votes', PostVoteController::class)->only('store');
     Route::resource('communities.posts.comments', PostCommentController::class)->except(['show', 'index']);
+
+    Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
+        Route::get('create', [ReportController::class, 'create'])->name('create');
+        Route::post('', [ReportController::class, 'store'])->name('store');
+    });
 });
 
 Route::get('/communities/{community}/posts/{post}', [PostController::class, 'show'])->name('communities.posts.show');
-Route::get('/communities/{community}/posts/{post}/comments/{comment}', [PostCommentController::class, 'show'])->name('communities.posts.comments.show');
+Route::get('/communities/{community}/posts/{post}/comments/{comment}', [PostCommentController::class, 'show'])
+    ->name('communities.posts.comments.show');
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => ['auth', 'verified']], function () {
     Route::get('', [ProfileController::class, 'index'])->name('index');
