@@ -7,40 +7,38 @@ namespace Tests\Feature\Report;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CommentTest extends TestCase
+class PostTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
-     * Ссылка на жалобу на комментарий недоступна гостям
+     * Ссылка на жалобу недоступна гостям
      */
     public function testGuest()
     {
         $community = $this->createCommunity();
         $post      = $this->createPost(['community_id' => $community->id]);
-        $this->createPostComment(['post_id' => $post->id]);
 
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
-        $response->assertDontSee('Report Comment');
+        $response->assertDontSee('Report Post');
     }
 
     /**
-     * Ссылка на жалобу на комментарий недоступна пользователям с неподтвержденным email
+     * Ссылка на жалобу недоступна пользователям с неподтвержденным email
      */
     public function testNotVerifiedUser()
     {
         $community = $this->createCommunity();
         $post      = $this->createPost(['community_id' => $community->id]);
-        $this->createPostComment(['post_id' => $post->id]);
 
         $this->signIn($this->createUser([], true));
 
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
-        $response->assertDontSee('Report Comment');
+        $response->assertDontSee('Report Post');
     }
 
     /**
-     * Ссылка на жалобу на комментарий недоступна автору комментария
+     * Ссылка на жалобу недоступна автору комментария
      */
     public function testOwner()
     {
@@ -49,11 +47,10 @@ class CommentTest extends TestCase
         $this->signIn($user);
 
         $community = $this->createCommunity();
-        $post      = $this->createPost(['community_id' => $community->id]);
-        $this->createPostComment(['post_id' => $post->id, 'user_id' => $user->id]);
+        $post      = $this->createPost(['community_id' => $community->id, 'user_id' => $user->id]);
 
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
-        $response->assertDontSee('Report Comment');
+        $response->assertDontSee('Report Post');
     }
 
     /**
@@ -65,10 +62,9 @@ class CommentTest extends TestCase
 
         $community = $this->createCommunity();
         $post      = $this->createPost(['community_id' => $community->id]);
-        $this->createPostComment(['post_id' => $post->id]);
 
         $response = $this->get($this->buildPostShowUrl($community->slug, $post->slug));
-        $response->assertSee('Report Comment');
+        $response->assertSee('Report Post');
     }
 
     /**

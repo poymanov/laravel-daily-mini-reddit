@@ -96,7 +96,7 @@ class PostCommentPolicy
      */
     public function report(User $user, PostComment $postComment)
     {
-        return $user->id != $postComment->user_id;
+        return $user->hasVerifiedEmail() && $user->id != $postComment->user_id;
     }
 
     /**
