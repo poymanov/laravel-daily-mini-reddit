@@ -70,6 +70,17 @@ class CommunityPolicy
     }
 
     /**
+     * @param User      $user
+     * @param Community $community
+     *
+     * @return bool
+     */
+    public function report(User $user, Community $community)
+    {
+        return $user->hasVerifiedEmail() && $user->id != $community->user_id;
+    }
+
+    /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user

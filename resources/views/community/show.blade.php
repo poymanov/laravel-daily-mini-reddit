@@ -8,6 +8,15 @@
                             <a href="{{ route('communities.posts.create', $community) }}" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create post</a>
                         </div>
                     @endauth
+
+                    @canany(['report'], $community)
+                        <div class="p-6 bg-white mb-5 sm:rounded-lg">
+                            <div class="flex">
+                                <a href="{{ route('reports.create', ['type' => 'community', 'id' => $community->id]) }}" class="px-2 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2">Report Community</a>
+                            </div>
+                        </div>
+                    @endcan
+
                     <x-posts :posts="$posts" :postsTextPreviewLimit="$communityPostsTextPreviewLimit"/>
                 </div>
 
