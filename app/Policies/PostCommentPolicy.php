@@ -89,6 +89,17 @@ class PostCommentPolicy
     }
 
     /**
+     * @param User        $user
+     * @param PostComment $postComment
+     *
+     * @return bool
+     */
+    public function report(User $user, PostComment $postComment)
+    {
+        return $user->id != $postComment->user_id;
+    }
+
+    /**
      * Determine whether the user can permanently delete the model.
      *
      * @param \App\Models\User        $user

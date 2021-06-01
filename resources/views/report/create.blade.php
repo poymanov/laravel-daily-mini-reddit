@@ -14,8 +14,8 @@
                     <form method="POST" action="{{ route('reports.store') }}">
                         @csrf
 
-                        <input type="hidden" name="reportable_type" value="{{ $type }}">
-                        <input type="hidden" name="reportable_id" value="{{ $id }}">
+                        <input type="hidden" name="type" value="{{ $type }}">
+                        <input type="hidden" name="id" value="{{ $id }}">
 
                         <!-- Text -->
                         <div class="mb-4">

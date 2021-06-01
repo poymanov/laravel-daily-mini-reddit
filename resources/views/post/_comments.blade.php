@@ -10,8 +10,12 @@
                 <div class="text-sm mb-2">
                     Author: {{ $comment->user->name }} Created: {{ $comment->created_at->diffForHumans() }}
                 </div>
-                @canany(['update', 'delete'], $comment)
+                @canany(['update', 'delete', 'report'], $comment)
                     <div class="text-xs mt-3 flex">
+                        @can('report', $comment)
+                            <a href="{{ route('reports.create', ['type' => 'comment', 'id' => $comment->id]) }}"
+                               class="p-1 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2">Report Comment</a>
+                        @endcan
                         @can('update', $comment)
                             <a href="{{ route('communities.posts.comments.edit', [$community, $post, $comment]) }}"
                                class="p-1 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-2">Edit Comment</a>
@@ -28,6 +32,9 @@
                         @endcan
                     </div>
                 @endcan
+                <div class="text-xs mt-3">
+
+                </div>
             </div>
             <hr class="my-2">
         @endforeach
