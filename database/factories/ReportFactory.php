@@ -28,7 +28,7 @@ class ReportFactory extends Factory
     public function definition()
     {
         return [
-            'text'    => $this->faker->sentence(),
+            'text'    => $this->faker->sentence,
             'user_id' => User::factory(),
         ];
     }

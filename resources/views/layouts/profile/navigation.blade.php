@@ -21,6 +21,11 @@
                         {{ __('Communities') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('profile.reports.index')" :active="request()->routeIs('profile.reports.*')">
+                        {{ __('Reports') }}
+                    </x-nav-link>
+                </div>
             </div>
 
             <!-- Settings Dropdown -->

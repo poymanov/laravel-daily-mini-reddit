@@ -8,6 +8,7 @@ use App\Http\Controllers\PostVoteController;
 use App\Http\Controllers\Profile\CommunityController as ProfileCommunityController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Profile\ReportController as ProfileReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +47,8 @@ Route::get('/communities/{community}/posts/{post}/comments/{comment}', [PostComm
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'middleware' => ['auth', 'verified']], function () {
     Route::get('', [ProfileController::class, 'index'])->name('index');
     Route::resource('communities', ProfileCommunityController::class);
+    Route::resource('reports', ProfileReportController::class)
+        ->middleware(['role:admin'])->except(['create', 'store', 'edit', 'update']);
 });
 
 require __DIR__ . '/auth.php';

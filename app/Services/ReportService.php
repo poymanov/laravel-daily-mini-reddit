@@ -10,7 +10,7 @@ use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\Report;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ReportService
 {
@@ -19,6 +19,20 @@ class ReportService
         ReportTypeEnum::POST      => Post::class,
         ReportTypeEnum::COMMUNITY => Community::class,
     ];
+
+    /**
+     * Получение списка всех жалоб на пользовательский контент
+     *
+     * @param int|null $perPage
+     *
+     * @return LengthAwarePaginator
+     */
+    public function getAll(int $perPage = null): LengthAwarePaginator
+    {
+        $perPage = $perPage ?? config('pagination.profile_reports');
+
+        return Report::latest()->paginate($perPage);
+    }
 
     /**
      * Проверка существования типа жалобы
