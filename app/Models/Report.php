@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @mixin \Eloquent
  * @method static \Database\Factories\ReportFactory factory(...$parameters)
  * @property-read Model|\Eloquent $reportable
+ * @property-read \App\Models\User $user
  */
 class Report extends Model
 {
@@ -65,5 +66,13 @@ class Report extends Model
     public function reportable()
     {
         return $this->morphTo();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

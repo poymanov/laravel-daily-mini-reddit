@@ -25,6 +25,7 @@
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                 Created At
                                             </th>
+                                            <th scope="col" class="relative px-6 py-3"></th>
                                         </tr>
                                         </thead>
                                         <tbody class="bg-white divide-y divide-gray-200">
@@ -44,6 +45,9 @@
                                                         <div class="text-sm font-medium text-gray-900">
                                                             {{ $report->created_at }}
                                                         </div>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ route('profile.reports.show', $report->id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
                                                     </td>
                                                 </tr>
                                             @endforeach

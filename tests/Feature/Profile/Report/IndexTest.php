@@ -75,6 +75,8 @@ class IndexTest extends TestCase
 
         $this->signIn($this->createAdmin());
         $response = $this->get(self::URL);
+        $response->assertSee('View');
+        $response->assertSee('/profile/reports/' . $report->id);
         $response->assertSee('Comment #' . $comment->id);
         $response->assertSee($report->text);
         $response->assertSee($report->created_at);
@@ -91,6 +93,8 @@ class IndexTest extends TestCase
 
         $this->signIn($this->createAdmin());
         $response = $this->get(self::URL);
+        $response->assertSee('View');
+        $response->assertSee('/profile/reports/' . $report->id);
         $response->assertSee('Post #' . $post->id);
         $response->assertSee($report->text);
         $response->assertSee($report->created_at);
@@ -107,6 +111,8 @@ class IndexTest extends TestCase
 
         $this->signIn($this->createAdmin());
         $response = $this->get(self::URL);
+        $response->assertSee('View');
+        $response->assertSee('/profile/reports/' . $report->id);
         $response->assertSee('Community #' . $community->id);
         $response->assertSee($report->text);
         $response->assertSee($report->created_at);

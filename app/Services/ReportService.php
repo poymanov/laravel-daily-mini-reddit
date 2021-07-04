@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Dtos\ReportObjectDto;
 use App\Enums\ReportTypeEnum;
 use App\Models\Community;
 use App\Models\Post;
@@ -32,6 +33,55 @@ class ReportService
         $perPage = $perPage ?? config('pagination.profile_reports');
 
         return Report::latest()->paginate($perPage);
+    }
+
+    /**
+     * Получение объекта на который создана жалоба
+     *
+     * @param int $reportId
+     *
+     * @return ReportObjectDto
+     * @throws Exception
+     */
+    public function getReportObjectByReportId(int $reportId): ReportObjectDto
+    {
+        /** @var Report|null $report */
+        $report = Report::whereId($reportId)->first();
+
+        if (is_null($report)) {
+            throw new Exception('Not existed report');
+        }
+
+        $reportableObjectId = $report->reportable_id;
+
+        switch ($report->reportable_type) {
+            case PostComment::class:
+                $reportableObject = PostComment::withTrashed()->find($reportableObjectId);
+
+                if (!$reportableObject) {
+                    throw new Exception('Failed to find object for report (ID: ' . $reportableObjectId . ')');
+                }
+
+                return new ReportObjectDto(null, $reportableObject->text);
+            case Post::class:
+                $reportableObject = Post::withTrashed()->find($reportableObjectId);
+
+                if (!$reportableObject) {
+                    throw new Exception('Failed to find object for report (ID: ' . $reportableObjectId . ')');
+                }
+
+                return new ReportObjectDto($reportableObject->title, $reportableObject->text);
+            case Community::class:
+                $reportableObject = Community::withTrashed()->find($reportableObjectId);
+
+                if (!$reportableObject) {
+                    throw new Exception('Failed to find object for report (ID: ' . $reportableObjectId . ')');
+                }
+
+                return new ReportObjectDto($reportableObject->name, $reportableObject->description);
+            default:
+                throw new Exception('Wrong object for report');
+        }
     }
 
     /**
