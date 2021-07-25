@@ -155,4 +155,20 @@ class IndexTest extends TestCase
 
         $response->assertSeeInOrder(['Post #' . $post->id, 'Community #' . $community->id]);
     }
+
+    /**
+     * Удаленные жалобы не должны отображаться
+     */
+    public function testDeleted()
+    {
+        $comment = $this->createPostComment();
+
+        $report = $this->createReport(['reportable_type' => PostComment::class, 'reportable_id' => $comment->id], true);
+
+        $this->signIn($this->createAdmin());
+        $response = $this->get(self::URL);
+        $response->assertDontSee('Comment #' . $comment->id);
+        $response->assertDontSee($report->text);
+        $response->assertDontSee($report->created_at);
+    }
 }

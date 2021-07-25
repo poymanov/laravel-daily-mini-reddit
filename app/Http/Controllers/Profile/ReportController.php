@@ -7,6 +7,8 @@ namespace App\Http\Controllers\Profile;
 use App\Http\Controllers\Controller;
 use App\Models\Report;
 use App\Services\ReportService;
+use App\UseCases\Report\Delete;
+use Throwable;
 
 class ReportController extends Controller
 {
@@ -41,5 +43,25 @@ class ReportController extends Controller
         $reportableObject = $this->reportService->getReportObjectByReportId($report->id);
 
         return view('profile.report.show', compact('report', 'reportableObject'));
+    }
+
+    /**
+     * @param Report $report
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function destroy(Report $report)
+    {
+        $command     = new Delete\Command();
+        $command->id = $report->id;
+
+        try {
+            $handler = new Delete\Handler();
+            $handler->handle($command);
+
+            return redirect(route('profile.reports.index'))->with('alert.success', 'Report resolved');
+        } catch (Throwable $e) {
+            return redirect(route('profile.reports.index'))->with('alert.error', 'Failed to resolve report');
+        }
     }
 }

@@ -4,9 +4,20 @@
             {{ __('Details') }}
         </h2>
     </x-slot>
-
     <div class="py-12">
-
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="p-6 bg-white mb-5 sm:rounded-lg">
+                <div class="flex">
+                    @role('admin')
+                    <form action="{{ route('profile.reports.destroy', $report) }}" method="post">
+                        @csrf
+                        @method('delete')
+                        <button onclick="return confirm('Are you sure?')" class="px-2 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Resolve Report</button>
+                    </form>
+                    @endrole
+                </div>
+            </div>
+        </div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex justify-between items-start">
                 <div class="w-2/4 overflow-hidden col-span-2 mr-6">

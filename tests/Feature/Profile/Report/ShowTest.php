@@ -9,13 +9,11 @@ use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ShowTest extends TestCase
 {
     use RefreshDatabase;
-    use WithFaker;
 
     private const URL = '/profile/reports';
 
@@ -87,6 +85,7 @@ class ShowTest extends TestCase
         $response->assertSee('Description');
         $response->assertSee('Reporter');
         $response->assertSee('Created At');
+        $response->assertSee('Resolve Report');
         $response->assertOk();
     }
 
