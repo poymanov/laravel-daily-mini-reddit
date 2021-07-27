@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enums\RoleEnum;
 use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserService
 {
@@ -14,6 +15,7 @@ class UserService
      * Проверка, является ли пользователь администратором
      *
      * @param int $id
+     *
      * @return bool
      * @throws Exception
      */
@@ -26,5 +28,17 @@ class UserService
         }
 
         return $user->hasRole(RoleEnum::ADMIN);
+    }
+
+    /**
+     * Получение списка пользователей-администраторов
+     *
+     * @return Collection
+     */
+    public function getAdminUsers(): Collection
+    {
+        return User::whereHas("roles", function ($q) {
+            $q->where("name", RoleEnum::ADMIN);
+        })->get();
     }
 }

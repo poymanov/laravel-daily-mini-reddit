@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Report\StoreRequest;
 use App\Services\ReportService;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -16,12 +17,17 @@ class ReportController extends Controller
     /** @var ReportService */
     private ReportService $reportService;
 
+    /** @var UserService */
+    private UserService $userService;
+
     /**
      * @param ReportService $reportService
+     * @param UserService   $userService
      */
-    public function __construct(ReportService $reportService)
+    public function __construct(ReportService $reportService, UserService $userService)
     {
         $this->reportService = $reportService;
+        $this->userService   = $userService;
     }
 
     /**
@@ -61,7 +67,7 @@ class ReportController extends Controller
             $command->type   = $request->get('type');
             $command->id     = (int) $request->get('id');
 
-            $handler = new Create\Handler($this->reportService);
+            $handler = new Create\Handler($this->reportService, $this->userService);
             $handler->handle($command);
 
             return redirect()->route('home')->with('alert.success', 'Report was successfully created');

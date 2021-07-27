@@ -5,20 +5,29 @@ declare(strict_types=1);
 namespace App\UseCases\Report\Create;
 
 use App\Models\Report;
+use App\Models\User;
+use App\Notifications\NewReport;
 use App\Services\ReportService;
+use App\Services\UserService;
 use Exception;
+use Illuminate\Support\Facades\Notification;
 
 class Handler
 {
     /** @var ReportService */
     private ReportService $reportService;
 
+    /** @var UserService */
+    private UserService $userService;
+
     /**
      * @param ReportService $reportService
+     * @param UserService   $userService
      */
-    public function __construct(ReportService $reportService)
+    public function __construct(ReportService $reportService, UserService $userService)
     {
         $this->reportService = $reportService;
+        $this->userService   = $userService;
     }
 
     /**
@@ -41,5 +50,7 @@ class Handler
         if (!$report->save()) {
             throw new Exception('Failed to create report');
         }
+
+        Notification::send($this->userService->getAdminUsers(), new NewReport($report));
     }
 }

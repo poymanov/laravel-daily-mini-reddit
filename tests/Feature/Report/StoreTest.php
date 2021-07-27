@@ -7,8 +7,10 @@ namespace Tests\Feature\Report;
 use App\Models\Community;
 use App\Models\Post;
 use App\Models\PostComment;
+use App\Notifications\NewReport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -310,5 +312,31 @@ class StoreTest extends TestCase
             'reportable_type' => Community::class,
             'reportable_id'   => $community->id,
         ]);
+    }
+
+    /**
+     * Отправка уведомления при создании жалобы
+     */
+    public function testSuccessNotifications()
+    {
+        Notification::fake();
+
+        $this->createAdmin();
+        $this->createAdmin();
+
+        $user = $this->createUser();
+        $this->signIn($user);
+
+        $community = $this->createCommunity();
+
+        $data = [
+            'type' => 'community',
+            'id'   => $community->id,
+            'text' => $this->faker->sentence(),
+        ];
+
+        $this->post(self::STORE_URL, $data);
+
+        Notification::assertTimesSent(2, NewReport::class);
     }
 }
