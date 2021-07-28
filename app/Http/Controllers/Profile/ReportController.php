@@ -7,19 +7,26 @@ namespace App\Http\Controllers\Profile;
 use App\Http\Controllers\Controller;
 use App\Models\Report;
 use App\Services\ReportService;
+use App\Services\UserService;
 use App\UseCases\Report\Delete;
 use Throwable;
 
 class ReportController extends Controller
 {
+    /** @var ReportService */
     private ReportService $reportService;
+
+    /** @var UserService */
+    private UserService $userService;
 
     /**
      * @param ReportService $reportService
+     * @param UserService   $userService
      */
-    public function __construct(ReportService $reportService)
+    public function __construct(ReportService $reportService, UserService $userService)
     {
         $this->reportService = $reportService;
+        $this->userService   = $userService;
     }
 
     /**
@@ -56,7 +63,7 @@ class ReportController extends Controller
         $command->id = $report->id;
 
         try {
-            $handler = new Delete\Handler();
+            $handler = new Delete\Handler($this->userService);
             $handler->handle($command);
 
             return redirect(route('profile.reports.index'))->with('alert.success', 'Report resolved');

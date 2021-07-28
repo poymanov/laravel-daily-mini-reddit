@@ -34,8 +34,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Query\Builder|Report withoutTrashed()
  * @mixin \Eloquent
  * @method static \Database\Factories\ReportFactory factory(...$parameters)
- * @property-read Model|\Eloquent $reportable
- * @property-read \App\Models\User $user
+ * @property-read Model|\Eloquent            $reportable
+ * @property-read \App\Models\User           $user
  */
 class Report extends Model
 {
@@ -75,4 +75,8 @@ class Report extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $casts = [
+        'user_id' => 'integer',
+    ];
 }

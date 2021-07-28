@@ -41,4 +41,16 @@ class UserService
             $q->where("name", RoleEnum::ADMIN);
         })->get();
     }
+
+    /**
+     * Получение пользователя по ID
+     *
+     * @param int $userId ID пользователя, которого необходимо получить
+     *
+     * @return User|null
+     */
+    public function findUserById(int $userId): ?User
+    {
+        return User::whereId($userId)->first();
+    }
 }

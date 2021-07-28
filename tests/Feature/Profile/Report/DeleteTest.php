@@ -6,7 +6,9 @@ namespace Tests\Feature\Profile\Report;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\ReportResolved;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class DeleteTest extends TestCase
@@ -91,5 +93,21 @@ class DeleteTest extends TestCase
             'id'         => $report->id,
             'deleted_at' => null,
         ]);
+    }
+
+    /**
+     * Отправка уведомления при удалении жалобы
+     */
+    public function testSuccessNotification()
+    {
+        Notification::fake();
+
+        $post   = $this->createPost();
+        $report = $this->createReport(['reportable_type' => Post::class, 'reportable_id' => $post->id]);
+
+        $this->signIn($this->createAdmin());
+        $this->delete(self::URL . '/' . $report->id);
+
+        Notification::assertTimesSent(1, ReportResolved::class);
     }
 }
